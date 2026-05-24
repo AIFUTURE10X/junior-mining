@@ -385,6 +385,7 @@
             <span class="pill">Valuation peers</span>
             <span class="pill">Stage checklists</span>
             <span class="pill">Expert signals</span>
+            <span class="pill">Launch readiness</span>
             <span class="pill">No direct advice</span>
           </div>
         </div>
@@ -392,7 +393,7 @@
         <span class="kicker">Product direction</span>
         <h1>Build the research engine before the social-follow layer.</h1>
         <p class="lede">
-          OreIQ should combine source-cited reports, valuation peer comparisons, stage-specific junior mining checklists, and public expert commentary into one research workflow. The expert-following feature is worth adding, but only if OreIQ treats Rick Rule, Don Durrett, Jacques Bonneau, and future names as public-source signal inputs. The product should summarize what credible people are discussing, cite the original source, compare it against filings, technical evidence, valuation data, and stage-specific rules, and avoid telling users to copy trades or take personal financial advice.
+          OreIQ should combine source-cited reports, valuation peer comparisons, stage-specific junior mining checklists, public expert commentary, and production-ready account, billing, deployment, and monitoring systems into one research workflow. The expert-following feature is worth adding, but only if OreIQ treats Rick Rule, Don Durrett, Jacques Bonneau, and future names as public-source signal inputs. The product should summarize what credible people are discussing, cite the original source, compare it against filings, technical evidence, valuation data, and stage-specific rules, and avoid telling users to copy trades or take personal financial advice.
         </p>
       </section>
 
@@ -544,10 +545,34 @@
             <label class="checklist-item"><input type="checkbox" data-task="s6-admin-review"><span><strong>Add admin review queue</strong><span>Let a human review low-confidence, conflicting, missing-data-heavy, or paid reports before delivery during validation.</span></span></label>
           </div>
         </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 7</span>
+              <h2>Production and launch readiness</h2>
+              <p>Goal: make the app reliable enough for real users, paid reports, and repeatable operations after the core research workflow works.</p>
+            </div>
+            <span class="stage-badge">Launch gate</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s7-auth-accounts"><span><strong>Add auth and user accounts</strong><span>Support sign-in, account ownership, saved reports, watchlists, and user-specific billing state without exposing one user's research to another.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-neon-migrations"><span><strong>Finalize Neon schema and migrations</strong><span>Create versioned migrations, indexes, relationships, seed data, and rollback notes for users, reports, sources, evidence, valuations, checklists, experts, alerts, and payments.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-live-data-providers"><span><strong>Choose live data and API providers</strong><span>Decide which feeds supply prices, market caps, filings, press releases, technical reports, commodity prices, exchange data, and company fundamentals.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-background-jobs"><span><strong>Add background jobs</strong><span>Run scraping, PDF extraction, valuation refreshes, report generation, expert-commentary ingestion, alert checks, retries, and stale-job cleanup outside the browser request path.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-admin-tools"><span><strong>Build admin review tools</strong><span>Let an operator inspect failed jobs, missing evidence, low-confidence citations, disputed valuation numbers, user reports, and paid-report delivery status.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-payments-billing"><span><strong>Set up payment and billing</strong><span>Implement checkout, invoices or receipts, paid-report entitlement checks, refund handling, webhook verification, and plan limits before charging real users.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-legal-copy"><span><strong>Add legal disclaimers and non-advice language</strong><span>Place clear disclaimers in reports, checkout, onboarding, and shared pages so OreIQ is positioned as research support, not personal financial advice.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-testing-checklist"><span><strong>Create testing checklist</strong><span>Cover report submission, citation quality, PDF parsing, missing-data behavior, valuation calculations, checklist states, auth access control, billing webhooks, and mobile layout.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-deployment-env"><span><strong>Document deployment and environment variables</strong><span>List every Vercel, Neon, OpenAI, Firecrawl, storage, payment, email, and cron secret needed for preview and production deployments.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-monitoring-backups"><span><strong>Add monitoring, error logging, and backups</strong><span>Track job failures, API errors, slow reports, billing webhook failures, database health, data freshness, and Neon backup/restore expectations.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-data-quality-rules"><span><strong>Define data-quality rules</strong><span>Show missing, stale, estimated, conflicting, or unverified valuation numbers clearly instead of hiding uncertainty inside the final rating.</span></span></label>
+          </div>
+        </article>
       </section>
 
       <p class="footer-note">
-        Recommended build order: Neon report jobs, source ingestion, OpenAI cited report generation, valuation plus stage-specific checklists, then expert signals. The expert feature is useful, but it should support due diligence instead of replacing it.
+        Recommended build order: Neon report jobs, source ingestion, OpenAI cited report generation, valuation plus stage-specific checklists, expert signals, then launch readiness. The expert feature is useful, but it should support due diligence instead of replacing it.
       </p>
     </main>
 
