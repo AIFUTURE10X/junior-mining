@@ -53,7 +53,7 @@
 
 - [ ] Add an "Open app" link to `landing-v4/index.html`.
 - [ ] Document direct file usage and optional static server usage in `README.md`.
-- [ ] Document the gap between this local MVP and the later backend AI/Supabase/Stripe build.
+- [ ] Document the gap between this local MVP and the later backend AI/Neon/Stripe build.
 
 ### Task 4: Verification
 

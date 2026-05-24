@@ -413,6 +413,7 @@ textarea {
 .confidence-card,
 .report-section,
 .score-tile,
+.expert-card,
 .evidence-table-wrap {
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: var(--radius);
@@ -532,6 +533,48 @@ textarea {
   line-height: 1.55;
 }
 
+.guardrail-copy {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.expert-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.expert-card {
+  padding: 14px;
+}
+
+.expert-card span,
+.expert-card small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.expert-card h4 {
+  margin: 6px 0 10px;
+  color: var(--gold);
+  font-size: 18px;
+}
+
+.expert-card p {
+  margin-bottom: 10px;
+  color: rgba(246, 241, 232, 0.8);
+  line-height: 1.5;
+}
+
+.muted-card p {
+  margin: 0;
+  color: var(--muted);
+}
+
 .section-columns {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -615,6 +658,11 @@ textarea {
   color: #ffbeb6;
 }
 
+.type-pill.expert {
+  background: rgba(199, 118, 62, 0.16);
+  color: #ffd3a8;
+}
+
 .side-rail {
   display: grid;
   align-content: start;
@@ -690,6 +738,10 @@ textarea {
   border-color: var(--green);
 }
 
+.alert-item.expert {
+  border-color: var(--copper);
+}
+
 .disclaimer p {
   margin-bottom: 0;
   color: var(--muted);
@@ -744,6 +796,7 @@ textarea {
 
   .report-hero,
   .section-columns,
+  .expert-grid,
   .side-rail {
     grid-template-columns: 1fr;
   }

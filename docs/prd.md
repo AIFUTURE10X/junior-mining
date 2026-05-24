@@ -303,11 +303,11 @@ These are draft assumptions, not final stack commitments.
 |---|---|---|
 | Frontend | Next.js web app | Fast SaaS build, good for dashboards and reports. |
 | Backend | Next.js API routes or server actions | Enough for MVP if scope is controlled. |
-| Database | Postgres via Supabase | Good for users, companies, reports, sources, alerts. |
-| Auth | Supabase Auth or Clerk | Simple account management. |
+| Database | Neon Postgres | Good for users, companies, reports, sources, alerts, watchlists, and report jobs. |
+| Auth | Neon Auth, Clerk, or Auth.js | Simple account management. |
 | Payments | Stripe | Subscription and one-time report payments. |
 | AI | OpenAI API | Report generation, extraction, summarization, classification. |
-| File storage | Supabase Storage | PDF uploads and source artifacts. |
+| File storage | Object storage such as Cloudflare R2, S3, or Vercel Blob | PDF uploads and source artifacts. |
 | Scraping | Firecrawl/Apify/manual URLs | Existing project context already has both available globally. |
 | Jobs | Inngest, Trigger.dev, or simple cron | Background report generation and alert monitoring. |
 
@@ -440,4 +440,3 @@ Required:
 - Which social sources matter most for this audience: X/Twitter, Reddit, CEO.ca, Stockhouse, HotCopper, Discord, or YouTube?
 - Should reports be fully automated at first, or manually reviewed before being sold?
 - Should the brand remain OreIQ, or should we keep searching for a cleaner available domain?
-

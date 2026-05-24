@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OreIQ Build Roadmap</title>
+    <link rel="icon" href='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"%3E%3Crect width="64" height="64" rx="12" fill="%23050505"/%3E%3Cpath d="M16 38 28 12l20 14-8 26-24-14Z" fill="%231a1b1c" stroke="%23f4c76f" stroke-width="3"/%3E%3Cpath d="M28 12 31 38l17-12M16 38l24 14-9-14" fill="none" stroke="%23c7763e" stroke-width="2"/%3E%3Ccircle cx="31" cy="38" r="4" fill="%2338d083"/%3E%3C/svg%3E'>
+    <style>
+      :root {
+        --ink: #050505;
+        --charcoal: #101112;
+        --panel: #1a1b1c;
+        --panel-raised: #202224;
+        --line: #333639;
+        --text: #f6f1e8;
+        --muted: #a9a198;
+        --paper: #f4f0e8;
+        --copper: #c7763e;
+        --gold: #f4c76f;
+        --green: #38d083;
+        --red: #ff6a55;
+        --blue: #2b9cff;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 14% 0%, rgba(199, 118, 62, 0.16), transparent 32rem),
+          radial-gradient(circle at 88% 8%, rgba(56, 208, 131, 0.08), transparent 24rem),
+          linear-gradient(180deg, #020303, #0a0b0b 46%, #050505);
+        color: var(--text);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      button,
+      input {
+        font: inherit;
+      }
+
+      .page {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 28px 0 64px;
+        overflow-wrap: anywhere;
+      }
+
+      .hero,
+      .card,
+      .stage,
+      .checklist-item {
+        border: 1px solid rgba(244, 199, 111, 0.2);
+        border-radius: 8px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(199, 118, 62, 0.03)),
+          rgba(16, 17, 17, 0.92);
+        box-shadow:
+          0 24px 70px rgba(0, 0, 0, 0.36),
+          inset 0 1px 0 rgba(255, 255, 255, 0.13),
+          inset 0 -2px 0 rgba(0, 0, 0, 0.78);
+      }
+
+      .hero {
+        padding: clamp(24px, 4vw, 42px);
+      }
+
+      .topline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+
+      .brand {
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .mark {
+        display: grid;
+        place-items: center;
+        width: 54px;
+        height: 54px;
+        border: 1px solid rgba(244, 199, 111, 0.34);
+        border-radius: 8px;
+        background:
+          linear-gradient(135deg, rgba(244, 199, 111, 0.14), rgba(199, 118, 62, 0.07)),
+          #090a0a;
+        color: var(--gold);
+        font-weight: 900;
+      }
+
+      .brand strong,
+      .brand small {
+        display: block;
+      }
+
+      .brand strong {
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .brand small,
+      .kicker,
+      .meta {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .pill-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 34px;
+        padding: 0 11px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 900px;
+        margin-bottom: 16px;
+        font-size: clamp(42px, 6vw, 82px);
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .lede {
+        max-width: 860px;
+        margin-bottom: 0;
+        color: rgba(246, 241, 232, 0.82);
+        font-size: 19px;
+        line-height: 1.6;
+        overflow-wrap: anywhere;
+      }
+
+      .progress-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: center;
+        margin-top: 18px;
+        padding: 18px;
+      }
+
+      .progress-meter {
+        overflow: hidden;
+        height: 13px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.42);
+      }
+
+      .progress-meter i {
+        display: block;
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--copper), var(--gold), var(--green));
+        transition: width 180ms ease;
+      }
+
+      .reset-button {
+        min-height: 42px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 8px;
+        padding: 0 14px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 800;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .card h2 {
+        margin-bottom: 10px;
+        font-size: 24px;
+      }
+
+      .card p,
+      .card li,
+      .stage p {
+        color: rgba(246, 241, 232, 0.78);
+        line-height: 1.55;
+        overflow-wrap: anywhere;
+      }
+
+      .card ul {
+        display: grid;
+        gap: 8px;
+        padding-left: 20px;
+        margin-bottom: 0;
+      }
+
+      .recommendation {
+        border-color: rgba(56, 208, 131, 0.28);
+      }
+
+      .warning {
+        border-color: rgba(255, 106, 85, 0.28);
+      }
+
+      .roadmap {
+        display: grid;
+        gap: 16px;
+        margin-top: 18px;
+      }
+
+      .stage {
+        padding: 18px;
+      }
+
+      .stage-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+        margin-bottom: 14px;
+      }
+
+      .stage h2 {
+        margin-bottom: 7px;
+        font-size: 28px;
+      }
+
+      .stage-badge {
+        border: 1px solid rgba(244, 199, 111, 0.28);
+        border-radius: 8px;
+        padding: 9px 10px;
+        color: var(--gold);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+
+      .checklist {
+        display: grid;
+        gap: 9px;
+        margin-top: 14px;
+      }
+
+      .checklist-item {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        padding: 13px;
+        box-shadow: none;
+      }
+
+      .checklist-item input {
+        width: 20px;
+        height: 20px;
+        margin: 2px 0 0;
+        accent-color: var(--green);
+      }
+
+      .checklist-item strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .checklist-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+        min-width: 0;
+        overflow-wrap: anywhere;
+      }
+
+      .checklist-item:has(input:checked) {
+        border-color: rgba(56, 208, 131, 0.34);
+        background:
+          linear-gradient(145deg, rgba(56, 208, 131, 0.08), rgba(255, 255, 255, 0.02)),
+          rgba(16, 17, 17, 0.88);
+      }
+
+      .checklist-item:has(input:checked) strong {
+        color: #a5ffd2;
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: rgba(56, 208, 131, 0.62);
+      }
+
+      .footer-note {
+        margin: 20px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .progress-card,
+        .stage-header {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .page {
+          width: min(100% - 36px, 1180px);
+          padding-top: 10px;
+        }
+
+        .hero,
+        .card,
+        .stage {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 32px;
+          overflow-wrap: anywhere;
+        }
+
+        .lede {
+          font-size: 16px;
+          line-height: 1.55;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="topline">
+          <div class="brand">
+            <div class="mark">Ore</div>
+            <span>
+              <strong>OreIQ</strong>
+              <small>Build roadmap</small>
+            </span>
+          </div>
+          <div class="pill-row" aria-label="Roadmap tags">
+            <span class="pill">Neon Postgres</span>
+            <span class="pill">Source-cited AI</span>
+            <span class="pill">Expert signals</span>
+            <span class="pill">No direct advice</span>
+          </div>
+        </div>
+
+        <span class="kicker">Product direction</span>
+        <h1>Build the research engine before the social-follow layer.</h1>
+        <p class="lede">
+          The expert-following feature is worth adding, but only if OreIQ treats Rick Rule, Don Durrett, Jacques Bonneau, and future names as public-source signal inputs. The product should summarize what credible people are discussing, cite the original source, compare it against filings and technical evidence, and avoid telling users to copy trades or take personal financial advice.
+        </p>
+      </section>
+
+      <section class="progress-card card" aria-label="Checklist progress">
+        <div>
+          <span class="kicker">Checklist progress</span>
+          <div class="progress-meter" aria-hidden="true"><i id="progress-fill"></i></div>
+          <p class="footer-note" id="progress-text">0 of 0 tasks complete.</p>
+        </div>
+        <button class="reset-button" id="reset-checklist" type="button">Reset checks</button>
+      </section>
+
+      <section class="grid" aria-label="Expert tracking recommendation">
+        <article class="card recommendation">
+          <span class="kicker">Best framing</span>
+          <h2>Expert Signal Tracker</h2>
+          <p>
+            Add it as a research layer, not an advice layer. Each person gets a profile, public source links, topics followed, companies mentioned, commodities mentioned, and a credibility/context note.
+          </p>
+        </article>
+
+        <article class="card">
+          <span class="kicker">Why it is useful</span>
+          <h2>Good idea, after core ingestion</h2>
+          <ul>
+            <li>Resource investors already follow personalities and newsletters.</li>
+            <li>It makes OreIQ more mining-specific than generic stock tools.</li>
+            <li>It can surface early attention around companies, commodities, and catalysts.</li>
+          </ul>
+        </article>
+
+        <article class="card warning">
+          <span class="kicker">Guardrails</span>
+          <h2>Do not call it advice</h2>
+          <ul>
+            <li>Do not scrape or republish paid newsletter content.</li>
+            <li>Do not imply endorsement or affiliation.</li>
+            <li>Do not generate buy/sell instructions from one person's comments.</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="roadmap" aria-label="Build roadmap">
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 1</span>
+              <h2>Turn the local demo into a real report product</h2>
+              <p>Goal: users can submit companies and sources, and the backend stores report jobs in Neon.</p>
+            </div>
+            <span class="stage-badge">Critical path</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s1-neon-schema"><span><strong>Create Neon schema</strong><span>Tables: users, companies, report_jobs, reports, sources, evidence_items, scorecard_items, watchlist_items, alerts.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-api-submit"><span><strong>Build report-job API</strong><span>Submit company details, source URLs, source text, uploaded-file metadata, and return job status.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-ui-job-status"><span><strong>Wire app UI to report jobs</strong><span>Replace the local-only generate action with queued, processing, ready, and failed states.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-server-report-save"><span><strong>Persist finished reports</strong><span>Save report sections, scores, evidence, missing information, and final rating back to Neon.</span></span></label>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 2</span>
+              <h2>Source ingestion and citation engine</h2>
+              <p>Goal: OreIQ reads actual public source material and produces citation-backed conclusions.</p>
+            </div>
+            <span class="stage-badge">Core value</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s2-file-storage"><span><strong>Add object storage</strong><span>Use R2, S3, or Vercel Blob for PDFs, investor decks, and source artifacts.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s2-pdf-extract"><span><strong>Extract PDF text server-side</strong><span>Handle technical reports, presentations, and filings without pretending browser metadata is enough.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s2-firecrawl"><span><strong>Use Firecrawl for URLs</strong><span>Scrape public company pages, press releases, technical-report pages, and investor presentations into clean markdown.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s2-citation-chunks"><span><strong>Create citation chunks</strong><span>Store source title, URL or file name, extracted text chunk, page/section where available, and confidence.</span></span></label>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 3</span>
+              <h2>OpenAI report generation</h2>
+              <p>Goal: the current deterministic report becomes a real cited AI analyst workflow with strict guardrails.</p>
+            </div>
+            <span class="stage-badge">AI engine</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s3-report-schema"><span><strong>Lock report JSON schema</strong><span>Define exact fields for summary, scorecard, red flags, catalysts, hype, missing info, evidence, and disclaimer.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s3-generation-chain"><span><strong>Build report-generation chain</strong><span>Use extracted source chunks and require citations per claim.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s3-advice-guardrails"><span><strong>Add advice-language guardrails</strong><span>Block buy now, sell now, guaranteed upside, and personalized recommendation language.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s3-eval-samples"><span><strong>Create sample report eval set</strong><span>Use 5 to 10 junior mining companies and verify citation quality, missing-data honesty, and useful score rationales.</span></span></label>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 4</span>
+              <h2>Expert Signal Tracker</h2>
+              <p>Goal: track public commentary from selected mining investors and analysts without turning OreIQ into a copy-trading tool.</p>
+            </div>
+            <span class="stage-badge">Add after Stage 2</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s4-expert-profiles"><span><strong>Create expert profile model</strong><span>Fields: name, role, public bio note, source URLs, topics, commodities, credibility notes, active flag.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-seed-experts"><span><strong>Seed first tracked names</strong><span>Rick Rule, Don Durrett, Jacques Bonneau. Add an admin flow for more names later.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-public-source-ingestion"><span><strong>Ingest public commentary only</strong><span>Use public interviews, podcasts, YouTube descriptions/transcripts where available, public posts, and public articles. Do not ingest paid/private content.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-mention-extraction"><span><strong>Extract companies and commodities mentioned</strong><span>Map mentions to companies, tickers, commodity themes, jurisdictions, and catalysts.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-signal-panel"><span><strong>Add expert signal panel to reports</strong><span>Show who mentioned the company/theme, when, source citation, quote summary, and whether filings support or contradict the signal.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-guardrail-copy"><span><strong>Add explicit non-affiliation copy</strong><span>Make clear these people are public sources being monitored, not partners, endorsers, or personalized advisers.</span></span></label>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 5</span>
+              <h2>Watchlists, alerts, and monetization</h2>
+              <p>Goal: users return because OreIQ monitors names, sources, and expert/public commentary after the first report.</p>
+            </div>
+            <span class="stage-badge">Retention</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s5-watchlist"><span><strong>Move watchlist to Neon</strong><span>Save companies, report history, user tags, and latest risk/rating state by account.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-alerts"><span><strong>Create alert rules</strong><span>New filing, press release, financing, drill result, expert mention, sentiment spike, and report-rating change.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-payment"><span><strong>Add paid report flow</strong><span>Start with one-time paid reports before subscription complexity.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-admin-review"><span><strong>Add admin review queue</strong><span>Let a human review low-confidence or paid reports before delivery during validation.</span></span></label>
+          </div>
+        </article>
+      </section>
+
+      <p class="footer-note">
+        Recommended build order: Neon report jobs, source ingestion, OpenAI cited report generation, then expert signals. The expert feature is useful, but it should support due diligence instead of replacing it.
+      </p>
+    </main>
+
+    <script>
+      const storageKey = "oreiq-roadmap-checklist-v1";
+      const boxes = Array.from(document.querySelectorAll("[data-task]"));
+      const fill = document.getElementById("progress-fill");
+      const text = document.getElementById("progress-text");
+      const reset = document.getElementById("reset-checklist");
+
+      function loadState() {
+        try {
+          return JSON.parse(localStorage.getItem(storageKey) || "{}");
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveState() {
+        const state = {};
+        boxes.forEach((box) => {
+          state[box.dataset.task] = box.checked;
+        });
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      }
+
+      function updateProgress() {
+        const complete = boxes.filter((box) => box.checked).length;
+        const total = boxes.length;
+        const percent = total ? Math.round((complete / total) * 100) : 0;
+        fill.style.width = percent + "%";
+        text.textContent = complete + " of " + total + " tasks complete (" + percent + "%).";
+      }
+
+      const state = loadState();
+      boxes.forEach((box) => {
+        box.checked = Boolean(state[box.dataset.task]);
+        box.addEventListener("change", () => {
+          saveState();
+          updateProgress();
+        });
+      });
+
+      reset.addEventListener("click", () => {
+        boxes.forEach((box) => {
+          box.checked = false;
+        });
+        saveState();
+        updateProgress();
+      });
+
+      updateProgress();
+    </script>
+  </body>
+</html>

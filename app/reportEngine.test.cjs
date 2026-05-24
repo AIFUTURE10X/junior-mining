@@ -79,3 +79,20 @@ test("catalyst and technical source cues improve project and catalyst scores", (
   assert.ok(strongReport.scorecard.catalystStrength.score > weakReport.scorecard.catalystStrength.score);
   assert.ok(strongReport.catalysts.length >= 2);
 });
+
+test("public expert commentary creates cited expert signals without advice language", () => {
+  const report = buildReport({
+    ...baseInput,
+    expertSources:
+      "Rick Rule | Public interview | https://example.com/rick-rule-copper | Discussed copper optionality and management discipline for Aurora Copper.\n" +
+      "Don Durrett | Public article | https://example.com/don-durrett-aurora | Mentioned Aurora Copper as a high-risk exploration story that needs assay follow-up."
+  });
+  const serialized = JSON.stringify(report).toLowerCase();
+
+  assert.equal(report.expertSignals.items.length, 2);
+  assert.match(report.expertSignals.summary, /public commentary/i);
+  assert.match(report.expertSignals.guardrail, /not affiliated|not endors/i);
+  assert.ok(report.evidence.some((item) => item.source.includes("rick-rule-copper") && item.type === "expert"));
+  assert.ok(report.expertSignals.items.every((item) => item.sourceUrl.startsWith("https://")));
+  assert.doesNotMatch(serialized, /\bstrong buy\b|\bbuy now\b|\bsell now\b|\bcopy trades\b/);
+});

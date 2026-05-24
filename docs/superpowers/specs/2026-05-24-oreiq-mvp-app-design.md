@@ -19,7 +19,7 @@ Those files define the first product as a junior-mining due-diligence assistant,
 
 ## Chosen Approach
 
-Create a standalone static app in `app/` and leave `landing-v4/` intact as the marketing surface. The app will work from `file:///` or any static server and use browser localStorage for saved reports. The report generation will be deterministic and clearly local for this MVP; real OpenAI/Supabase/Stripe integrations remain a backend phase.
+Create a standalone static app in `app/` and leave `landing-v4/` intact as the marketing surface. The app will work from `file:///` or any static server and use browser localStorage for saved reports. The report generation will be deterministic and clearly local for this MVP; real OpenAI/Neon/Stripe integrations remain a backend phase.
 
 ## Core User Flow
 

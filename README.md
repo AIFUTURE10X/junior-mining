@@ -29,14 +29,17 @@ Then open the shown local URL and go to `/app/`.
 - Deterministic local due-diligence report generation.
 - Mining scorecard with confidence and rationales.
 - Red flags, catalysts, missing-information list, hype/sentiment assessment, and evidence table.
+- Public expert signal capture for sources such as interviews, public articles, or posts.
+- Expert signal report section with non-affiliation and non-advice guardrails.
 - Local watchlist saved in browser localStorage.
 - Markdown export and print.
 
 ## Important Boundary
 
-This local MVP does not call OpenAI, Supabase, Stripe, or live market-data APIs. It is a working product workflow and demo surface, not the final hosted SaaS backend. The next backend phase should add:
+This local MVP does not call OpenAI, Neon, Stripe, or live market-data APIs. It is a working product workflow and demo surface, not the final hosted SaaS backend. The next backend phase should add:
 
-- Auth and saved reports in Supabase.
+- Neon Postgres for users, companies, report jobs, sources, saved reports, watchlists, and alerts.
+- Auth via Neon Auth, Clerk, or Auth.js.
 - Storage and server-side PDF extraction.
 - OpenAI report generation with citations.
 - Firecrawl/Apify source collection.

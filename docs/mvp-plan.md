@@ -185,7 +185,9 @@ Outcome: Users return because OreIQ monitors names after the first report.
 This can change later, but a practical first stack is:
 
 - Next.js web app.
-- Supabase Postgres/Auth/Storage.
+- Neon Postgres for users, companies, reports, sources, watchlists, and alerts.
+- Auth via Neon Auth, Clerk, or Auth.js.
+- Object storage for PDF uploads and source artifacts.
 - Stripe for payments.
 - OpenAI API for report generation.
 - Firecrawl and/or Apify for source collection.
@@ -200,4 +202,3 @@ Choose the first wedge:
 3. **Concierge plus thin app** - recommended path: users see software, but report quality can be manually controlled early.
 
 Recommended: concierge plus thin app.
-

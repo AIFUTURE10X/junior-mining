@@ -18,6 +18,9 @@
     ],
     sourceText:
       "NI 43-101 technical report confirms an inferred copper resource. Recent assay results returned copper intercepts from step-out drilling. Management announced a resource update and metallurgy test work. The company is also preparing a permitting update.",
+    expertSources:
+      "Rick Rule | Public interview | https://example.com/rick-rule-copper | Discussed copper optionality and management discipline for Northern Shield Metals.\n" +
+      "Don Durrett | Public article | https://example.com/don-durrett-nsm | Mentioned Northern Shield Metals as a high-risk exploration story that needs assay follow-up.",
     files: [
       { name: "Northern-Shield-NI-43-101.pdf", type: "application/pdf", text: "" }
     ]
@@ -34,6 +37,7 @@
     marketCap: document.getElementById("market-cap"),
     sourceUrls: document.getElementById("source-urls"),
     sourceText: document.getElementById("source-text"),
+    expertSources: document.getElementById("expert-sources"),
     sourceFiles: document.getElementById("source-files"),
     fileList: document.getElementById("file-list"),
     formError: document.getElementById("form-error"),
@@ -98,6 +102,7 @@
       marketCap: els.marketCap.value,
       sourceUrls: els.sourceUrls.value,
       sourceText: els.sourceText.value,
+      expertSources: els.expertSources.value,
       files: selectedFiles
     };
   }
@@ -112,6 +117,9 @@
     els.marketCap.value = input.marketCap || "";
     els.sourceUrls.value = Array.isArray(input.sourceUrls) ? input.sourceUrls.join("\n") : input.sourceUrls || "";
     els.sourceText.value = input.sourceText || "";
+    els.expertSources.value = Array.isArray(input.expertSources)
+      ? input.expertSources.map((item) => `${item.name || ""} | ${item.sourceType || item.type || ""} | ${item.sourceUrl || item.url || ""} | ${item.commentary || item.note || ""}`).join("\n")
+      : input.expertSources || "";
     selectedFiles = input.files || [];
     renderFileList();
   }
@@ -163,6 +171,20 @@
         </tr>
       `)
       .join("");
+    const expertRows = report.expertSignals.items.length
+      ? report.expertSignals.items
+          .map((item) => `
+            <article class="expert-card">
+              <div>
+                <span>${escapeHtml(item.sourceType)}</span>
+                <h4>${escapeHtml(item.name)}</h4>
+              </div>
+              <p>${escapeHtml(item.commentary)}</p>
+              <small>${escapeHtml(item.sourceUrl || "Source URL not supplied")} / ${escapeHtml(item.signal)} / ${escapeHtml(item.confidence)}</small>
+            </article>
+          `)
+          .join("")
+      : `<article class="expert-card muted-card"><p>No public expert commentary supplied for this report.</p></article>`;
 
     els.reportContent.innerHTML = `
       <div class="report-hero">
@@ -206,6 +228,13 @@
       <section class="report-section">
         <h3>Hype and sentiment</h3>
         <p><strong>${escapeHtml(report.hype.status)}:</strong> ${escapeHtml(report.hype.rationale)} Confidence: ${escapeHtml(report.hype.confidence)}.</p>
+      </section>
+
+      <section class="report-section">
+        <h3>Expert signals</h3>
+        <p><strong>${escapeHtml(report.expertSignals.status)}:</strong> ${escapeHtml(report.expertSignals.summary)}</p>
+        <p class="guardrail-copy">${escapeHtml(report.expertSignals.guardrail)}</p>
+        <div class="expert-grid">${expertRows}</div>
       </section>
 
       <section class="report-section">
@@ -318,6 +347,10 @@
 
     if (report.hype.status !== "Neutral") {
       alerts.push({ kind: "risk", text: `Hype status: ${report.hype.status}. ${report.hype.rationale}` });
+    }
+
+    if (report.expertSignals.items.length) {
+      alerts.push({ kind: "expert", text: `${report.expertSignals.items.length} expert signal source(s) attached for source-backed comparison.` });
     }
 
     els.alertList.innerHTML = alerts.length

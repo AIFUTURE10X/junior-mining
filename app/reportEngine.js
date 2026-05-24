@@ -1,7 +1,7 @@
 (function attachOreIQEngine(root) {
   "use strict";
 
-  const DIRECT_ADVICE_PATTERN = /\b(strong buy|buy now|sell now|guaranteed upside)\b/i;
+  const DIRECT_ADVICE_PATTERN = /\b(strong buy|buy now|sell now|guaranteed upside|copy trades)\b/i;
 
   const KEYWORDS = {
     technical: ["ni 43-101", "technical report", "resource", "reserve", "pea", "feasibility", "prefeasibility"],
@@ -67,9 +67,40 @@
       .filter((file) => file.name || file.text);
   }
 
+  function normalizeExpertSources(expertSources) {
+    if (!expertSources) {
+      return [];
+    }
+
+    if (Array.isArray(expertSources)) {
+      return expertSources
+        .map((source) => ({
+          name: compact(source.name),
+          sourceType: compact(source.sourceType || source.type),
+          sourceUrl: compact(source.sourceUrl || source.url),
+          commentary: compact(source.commentary || source.note || source.summary)
+        }))
+        .filter((source) => source.name || source.commentary || source.sourceUrl);
+    }
+
+    return compact(expertSources)
+      .split(/\r?\n/)
+      .map((line) => {
+        const parts = line.split("|").map(compact);
+        return {
+          name: parts[0] || "Public source",
+          sourceType: parts[1] || "Public commentary",
+          sourceUrl: parts[2] || "",
+          commentary: parts.slice(3).join(" | ") || parts[2] || ""
+        };
+      })
+      .filter((source) => source.name || source.commentary || source.sourceUrl);
+  }
+
   function normalizeInput(input) {
     const sourceUrls = splitLines(input.sourceUrls);
     const files = normalizeFiles(input.files);
+    const expertSources = normalizeExpertSources(input.expertSources);
 
     return {
       company: compact(input.company) || "Selected Mining Company",
@@ -81,7 +112,8 @@
       marketCap: compact(input.marketCap),
       sourceUrls,
       sourceText: compact(input.sourceText),
-      files
+      files,
+      expertSources
     };
   }
 
@@ -96,7 +128,8 @@
       input.marketCap,
       input.sourceUrls.join(" "),
       input.sourceText,
-      input.files.map((file) => `${file.name} ${file.text}`).join(" ")
+      input.files.map((file) => `${file.name} ${file.text}`).join(" "),
+      input.expertSources.map((source) => `${source.name} ${source.sourceType} ${source.sourceUrl} ${source.commentary}`).join(" ")
     ].join(" ").toLowerCase();
   }
 
@@ -283,7 +316,7 @@
     });
   }
 
-  function buildEvidence(input, text, confidence, hypeStatus, missingInformation) {
+  function buildEvidence(input, text, confidence, hypeStatus, missingInformation, expertSignals) {
     const evidence = [];
 
     input.sourceUrls.forEach((url) => {
@@ -330,11 +363,53 @@
       );
     }
 
+    expertSignals.items.forEach((item) => {
+      addEvidence(
+        evidence,
+        item.sourceUrl || item.name,
+        `${item.name} / ${item.sourceType}`,
+        item.finding,
+        "expert",
+        confidence - 8
+      );
+    });
+
     missingInformation.forEach((item) => {
       addEvidence(evidence, "Missing data", item, "Conclusion confidence is limited until this evidence is supplied.", "missing", 38);
     });
 
     return evidence;
+  }
+
+  function buildExpertSignals(input, text, confidence) {
+    const items = input.expertSources.map((source) => {
+      const commentary = source.commentary || "Public commentary source submitted for monitoring.";
+      const technicalSupport = hasAny(text, KEYWORDS.technical.concat(KEYWORDS.drill, KEYWORDS.catalyst));
+      const hypeCue = hasAny(commentary.toLowerCase(), KEYWORDS.hype);
+      const finding = technicalSupport
+        ? "Public commentary is logged as a research signal and should be compared against supplied technical and catalyst evidence."
+        : "Public commentary is logged as a research signal, but source evidence is not strong enough to validate it yet.";
+
+      return {
+        name: source.name || "Public source",
+        sourceType: source.sourceType || "Public commentary",
+        sourceUrl: source.sourceUrl,
+        commentary,
+        finding,
+        signal: hypeCue ? "Promotional-context review" : "Context signal",
+        confidence: confidenceLabel(confidence - 8)
+      };
+    });
+
+    return {
+      status: items.length ? "Tracked public commentary" : "No expert signals submitted",
+      summary: items.length
+        ? `${items.length} public commentary ${items.length === 1 ? "source is" : "sources are"} tracked as context, not as a recommendation.`
+        : "No public expert commentary was supplied for this report.",
+      guardrail:
+        "Tracked people are public sources only; they are not affiliated with OreIQ, are not endorsing this report, and their comments are not personalized investment recommendations.",
+      items
+    };
   }
 
   function findMissingInformation(input, text) {
@@ -446,12 +521,13 @@
     const text = textBundle(input);
     const confidence = computeConfidence(input, text);
     const hype = hypeAssessment(text, confidence);
+    const expertSignals = buildExpertSignals(input, text, confidence);
     const missingInformation = findMissingInformation(input, text);
     const scorecard = makeScorecard(input, text, confidence, hype.status);
     const redFlags = findRedFlags(text, hype.status, missingInformation);
     const catalysts = findCatalysts(text);
     const rating = makeRating(scorecard, confidence, redFlags, missingInformation);
-    const evidence = buildEvidence(input, text, confidence, hype.status, missingInformation);
+    const evidence = buildEvidence(input, text, confidence, hype.status, missingInformation, expertSignals);
     const summary = makeSummary(input, rating, confidence, scorecard, redFlags, missingInformation);
 
     const report = {
@@ -472,6 +548,7 @@
       catalysts,
       missingInformation,
       hype,
+      expertSignals,
       evidence,
       disclaimer:
         "OreIQ provides research support and source summaries only. It does not provide personalized investment advice, broker services, or guaranteed return claims."
@@ -516,6 +593,14 @@
       "",
       "## Missing Information",
       ...(report.missingInformation.length ? report.missingInformation : ["No major missing information item detected."]).map((line) => `- ${line}`),
+      "",
+      "## Expert Signals",
+      `Status: ${report.expertSignals.status}`,
+      report.expertSignals.summary,
+      report.expertSignals.guardrail,
+      ...(report.expertSignals.items.length
+        ? report.expertSignals.items.map((item) => `- ${item.name} (${item.sourceType}): ${item.commentary} Source: ${item.sourceUrl || "not supplied"}`)
+        : ["- No expert signal source supplied."]),
       "",
       "## Evidence",
       "| Type | Source | Cue | Finding | Confidence |",
