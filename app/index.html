@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OreIQ App - Junior Mining Due Diligence</title>
+    <meta
+      name="description"
+      content="Local OreIQ MVP app for source-cited junior mining due-diligence reports."
+    >
+    <link rel="icon" href="../assets/orescan-mark-256.png">
+    <link rel="stylesheet" href="./styles.css">
+    <script defer src="./reportEngine.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="./index.html" aria-label="OreIQ app home">
+        <img src="../assets/orescan-mark-256.png" alt="">
+        <span>
+          <strong>OreIQ</strong>
+          <small>Mining due diligence</small>
+        </span>
+      </a>
+      <div class="header-status" aria-label="App mode">
+        <span></span>
+        Local MVP engine
+      </div>
+      <nav class="header-actions" aria-label="App links">
+        <a href="../landing-v4/index.html">Landing</a>
+        <a href="../docs/prd.md">PRD</a>
+      </nav>
+    </header>
+
+    <main class="app-shell">
+      <section class="intake-panel" aria-labelledby="intake-title">
+        <div class="panel-heading">
+          <span class="kicker">Company intake</span>
+          <h1 id="intake-title">Research request</h1>
+        </div>
+
+        <form id="analysis-form" class="analysis-form">
+          <div class="field-grid">
+            <label>
+              Company
+              <input id="company" name="company" autocomplete="organization" value="Northern Shield Metals">
+            </label>
+            <label>
+              Ticker
+              <input id="ticker" name="ticker" autocomplete="off" value="NSM">
+            </label>
+          </div>
+
+          <div class="field-grid">
+            <label>
+              Exchange
+              <input id="exchange" name="exchange" autocomplete="off" value="TSXV">
+            </label>
+            <label>
+              Market cap
+              <input id="market-cap" name="marketCap" autocomplete="off" value="85">
+            </label>
+          </div>
+
+          <label>
+            Commodity
+            <select id="commodity" name="commodity">
+              <option>Copper</option>
+              <option>Gold</option>
+              <option>Silver</option>
+              <option>Uranium</option>
+              <option>Lithium</option>
+              <option>Rare earths</option>
+              <option>Mixed metals</option>
+            </select>
+          </label>
+
+          <label>
+            Project stage
+            <select id="stage" name="stage">
+              <option>Resource definition</option>
+              <option>Grassroots exploration</option>
+              <option>Discovery drilling</option>
+              <option>PEA / scoping</option>
+              <option>Feasibility</option>
+              <option>Development</option>
+              <option>Producer</option>
+            </select>
+          </label>
+
+          <label>
+            Jurisdiction
+            <input id="jurisdiction" name="jurisdiction" autocomplete="off" value="British Columbia">
+          </label>
+
+          <label>
+            Source URLs
+            <textarea id="source-urls" name="sourceUrls" rows="4">https://example.com/northern-shield-ni-43-101
+https://example.com/northern-shield-assay-results</textarea>
+          </label>
+
+          <label>
+            Source text
+            <textarea id="source-text" name="sourceText" rows="8">NI 43-101 technical report confirms an inferred copper resource. Recent assay results returned copper intercepts from step-out drilling. Management announced a resource update and metallurgy test work. The company is also preparing a permitting update.</textarea>
+          </label>
+
+          <label class="file-field">
+            Source files
+            <input id="source-files" name="sourceFiles" type="file" multiple accept=".txt,.md,.csv,.pdf,text/plain,text/markdown,text/csv,application/pdf">
+          </label>
+          <ul id="file-list" class="file-list" aria-live="polite"></ul>
+
+          <p id="form-error" class="form-error" role="alert"></p>
+
+          <div class="form-actions">
+            <button class="primary-action" type="submit">
+              <span aria-hidden="true">GO</span>
+              Generate report
+            </button>
+            <button class="secondary-action" id="load-sample" type="button">
+              <span aria-hidden="true">EX</span>
+              Load sample
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section class="report-panel" aria-labelledby="report-title">
+        <div class="report-toolbar">
+          <div>
+            <span class="kicker">Due-diligence report</span>
+            <h2 id="report-title">Northern Shield Metals</h2>
+          </div>
+          <div class="report-actions">
+            <button id="save-report" class="icon-action" type="button" disabled title="Save report">
+              <span aria-hidden="true">+</span>
+              Save
+            </button>
+            <button id="export-report" class="icon-action" type="button" disabled title="Export Markdown">
+              <span aria-hidden="true">MD</span>
+              Export
+            </button>
+            <button id="print-report" class="icon-action" type="button" disabled title="Print report">
+              <span aria-hidden="true">PR</span>
+              Print
+            </button>
+          </div>
+        </div>
+
+        <article id="report-content" class="report-content" aria-live="polite">
+          <div class="empty-state">
+            <span></span>
+            Generate a report to populate the scorecard, evidence table, watchlist controls, and export actions.
+          </div>
+        </article>
+      </section>
+
+      <aside class="side-rail" aria-label="Saved reports and alerts">
+        <section class="side-module" aria-labelledby="watchlist-title">
+          <div class="side-heading">
+            <span class="kicker">Watchlist</span>
+            <h2 id="watchlist-title">Saved reports</h2>
+          </div>
+          <div id="watchlist" class="watchlist" aria-live="polite"></div>
+        </section>
+
+        <section class="side-module" aria-labelledby="alerts-title">
+          <div class="side-heading">
+            <span class="kicker">Alerts</span>
+            <h2 id="alerts-title">Review inbox</h2>
+          </div>
+          <div id="alert-list" class="alert-list"></div>
+        </section>
+
+        <section class="side-module disclaimer">
+          <span class="kicker">Guardrail</span>
+          <p>
+            Research support only. OreIQ does not provide personalized investment advice, broker services, or guaranteed return claims.
+          </p>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="status-bar">
+      <span id="status-text">Ready.</span>
+    </footer>
+  </body>
+</html>
