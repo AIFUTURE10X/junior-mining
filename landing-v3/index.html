@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OreIQ - AI Due Diligence for Junior Mining Stocks</title>
+    <meta
+      name="description"
+      content="Source-cited AI due diligence for junior mining stocks. Read filings, drill results, technical reports, and market sentiment faster."
+    >
+    <link rel="icon" href="../assets/orescan-mark-256.png">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body class="v3">
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <canvas id="ore-scan" aria-hidden="true"></canvas>
+        <div class="hero-glow" aria-hidden="true"></div>
+
+        <header class="nav" aria-label="Main navigation">
+          <nav class="nav-links" aria-label="Page sections">
+            <a class="brand" href="#top" aria-label="OreIQ home">
+              <img src="../assets/orescan-mark-256.png" alt="">
+              <span>
+                <strong>OreIQ</strong>
+                <small>Junior mining intelligence</small>
+              </span>
+            </a>
+            <a href="#workflow">Workflow</a>
+            <a href="#features">Features</a>
+            <a href="#pricing">Pricing</a>
+          </nav>
+          <a class="nav-cta" href="#pricing">Early access</a>
+        </header>
+
+        <div class="command-marquee" aria-hidden="true">
+          <span>NI 43-101 parser online</span>
+          <span>SEDAR feed armed</span>
+          <span>Assay anomaly scan active</span>
+          <span>Promoter-risk radar live</span>
+        </div>
+
+        <div class="hero-grid" id="top">
+          <div class="hero-copy">
+            <div class="eyebrow">
+              <span></span>
+              Source-cited AI mining analyst
+            </div>
+            <h1 id="hero-title">AI due diligence for junior mining stocks.</h1>
+            <p class="hero-lede">
+              OreIQ turns filings, drill results, technical reports, news, and market sentiment into clear mining risk reports with evidence, red flags, and confidence levels.
+            </p>
+
+            <form class="ticker-search" id="ticker-form">
+              <label for="ticker-input">Company or ticker</label>
+              <div>
+                <input id="ticker-input" name="ticker" type="text" placeholder="Enter ticker or company name" value="NEM">
+                <button type="submit">Analyze company</button>
+              </div>
+            </form>
+
+            <div class="hero-actions" aria-label="Secondary actions">
+              <a class="secondary-link" href="#sample-report">View sample report</a>
+              <a class="secondary-link" href="#workflow">See workflow</a>
+            </div>
+
+            <ul class="proof-pills" aria-label="Product highlights">
+              <li>Evidence cited</li>
+              <li>Hype risk</li>
+              <li>Dilution checks</li>
+            </ul>
+
+            <div class="v3-signal-grid" aria-label="Live mining intelligence signals">
+              <div>
+                <span>Sources parsed</span>
+                <strong>1,284</strong>
+              </div>
+              <div>
+                <span>Red flags found</span>
+                <strong>37</strong>
+              </div>
+              <div>
+                <span>Average triage</span>
+                <strong>04m</strong>
+              </div>
+            </div>
+          </div>
+
+          <aside class="report-device" aria-label="OreIQ report preview">
+            <div class="v3-orbit-label top">ASSAY VEIN LOCKED</div>
+            <div class="v3-orbit-label bottom">SOURCE CHAIN VERIFIED</div>
+            <div class="device-bar">
+              <div>
+                <span class="status-dot"></span>
+                Live due-diligence scan
+              </div>
+              <strong id="scan-ticker">NEM</strong>
+            </div>
+
+            <div class="report-card main-report">
+              <div class="report-header">
+                <img src="../assets/orescan-mark-512.png" alt="">
+                <div>
+                  <p>OreIQ report</p>
+                  <h2 id="report-company">Newmont Corporation</h2>
+                  <span>Gold producer - Nevada, Australia, Canada</span>
+                </div>
+              </div>
+
+              <div class="rating-row">
+                <div>
+                  <span>Due-diligence rating</span>
+                  <strong>Watchlist candidate</strong>
+                </div>
+                <div>
+                  <span>Confidence</span>
+                  <strong>82%</strong>
+                </div>
+              </div>
+
+              <div class="score-grid">
+                <div>
+                  <span>Project quality</span>
+                  <strong>8.1</strong>
+                </div>
+                <div>
+                  <span>Dilution risk</span>
+                  <strong>Low</strong>
+                </div>
+                <div>
+                  <span>Hype risk</span>
+                  <strong>Neutral</strong>
+                </div>
+                <div>
+                  <span>Catalysts</span>
+                  <strong>3</strong>
+                </div>
+              </div>
+
+              <div class="evidence-list">
+                <div>
+                  <span class="line-marker gold"></span>
+                  Technical report confirms reserve base and mine life.
+                </div>
+                <div>
+                  <span class="line-marker copper"></span>
+                  Latest filing shows stable balance sheet and reduced leverage.
+                </div>
+                <div>
+                  <span class="line-marker green"></span>
+                  Social attention is not yet disconnected from fundamentals.
+                </div>
+              </div>
+            </div>
+
+            <div class="mini-stack">
+              <div class="mini-card warning">
+                <span>Red flag</span>
+                <strong>No current red flag above threshold</strong>
+              </div>
+              <div class="mini-card">
+                <span>Next catalyst</span>
+                <strong>Quarterly production update</strong>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section light-section" id="workflow">
+        <div class="section-copy">
+          <span class="section-kicker">Workflow</span>
+          <h2>From promotion to evidence in minutes.</h2>
+          <p>
+            Junior mining stories move fast. OreIQ gives investors a disciplined first pass before they spend hours reading PDFs, forums, and company presentations.
+          </p>
+        </div>
+
+        <div class="workflow-grid">
+          <article>
+            <span>01</span>
+            <h3>Enter a company</h3>
+            <p>Search by ticker, company name, exchange, or paste source links directly.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Collect evidence</h3>
+            <p>Upload PDFs or use URLs for technical reports, filings, press releases, and presentations.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Read the report</h3>
+            <p>Get a mining-specific scorecard, red flags, catalyst summary, and source-backed conclusions.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section dark-section" id="features">
+        <div class="section-copy narrow">
+          <span class="section-kicker">Built for resource investors</span>
+          <h2>Mining-specific analysis that generic stock tools miss.</h2>
+        </div>
+
+        <div class="feature-grid">
+          <article class="bevel-card">
+            <span class="feature-chip">Technical reports</span>
+            <h3>Drill results and resource estimates</h3>
+            <p>Summarize intercepts, grade, depth, resource categories, and what the report does not prove yet.</p>
+          </article>
+          <article class="bevel-card">
+            <span class="feature-chip">Capital risk</span>
+            <h3>Dilution, management, and jurisdiction</h3>
+            <p>Surface financing risk, insider alignment, permitting exposure, infrastructure gaps, and country risk.</p>
+          </article>
+          <article class="bevel-card">
+            <span class="feature-chip">Sentiment scan</span>
+            <h3>Hype detection without the noise</h3>
+            <p>Flag when social excitement looks promotional, unsupported, or disconnected from new evidence.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section report-section" id="sample-report">
+        <div class="sample-layout">
+          <div class="section-copy">
+            <span class="section-kicker">Sample report</span>
+            <h2>A due-diligence report built around facts, inference, and missing data.</h2>
+            <p>
+              OreIQ does not pretend to predict the future. It helps you decide whether a junior mining stock deserves deeper research.
+            </p>
+          </div>
+
+          <div class="sample-report">
+            <div class="sample-row">
+              <span>Final read</span>
+              <strong>High-risk watchlist candidate</strong>
+            </div>
+            <div class="sample-row">
+              <span>Evidence quality</span>
+              <strong>Good filings, limited metallurgy</strong>
+            </div>
+            <div class="sample-row">
+              <span>Market signal</span>
+              <strong>Social volume rising faster than news quality</strong>
+            </div>
+            <div class="sample-row">
+              <span>Missing data</span>
+              <strong>Updated recovery test work and funding plan</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section pricing-section" id="pricing">
+        <div class="section-copy narrow">
+          <span class="section-kicker">MVP access</span>
+          <h2>Start with source-cited reports, then add monitoring.</h2>
+          <p>
+            The first release should validate paid reports before expanding into full watchlists, alerts, and portfolio workflows.
+          </p>
+        </div>
+
+        <div class="pricing-grid">
+          <article class="price-card tier-copper">
+            <span>Copper</span>
+            <h3>$99</h3>
+            <p>One source-cited junior mining due-diligence report.</p>
+            <a href="mailto:hello@example.com?subject=OreIQ report request">Request report</a>
+          </article>
+          <article class="price-card tier-gold featured">
+            <span>Gold</span>
+            <h3>$49/mo</h3>
+            <p>Saved reports, limited watchlist, and monthly report credits.</p>
+            <a href="mailto:hello@example.com?subject=OreIQ early access">Join early access</a>
+          </article>
+          <article class="price-card tier-platinum">
+            <span>Platinum</span>
+            <h3>$99/mo</h3>
+            <p>More reports, watchlist monitoring, and priority analysis.</p>
+            <a href="mailto:hello@example.com?subject=OreIQ Pro access">Contact us</a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="brand small-brand">
+        <img src="../assets/orescan-mark-256.png" alt="">
+        <span>
+          <strong>OreIQ</strong>
+          <small>Research software, not financial advice.</small>
+        </span>
+      </div>
+      <p>
+        OreIQ provides research support and source summaries. It does not provide personalized investment advice, broker services, or guaranteed return claims.
+      </p>
+    </footer>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
