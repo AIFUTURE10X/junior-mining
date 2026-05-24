@@ -606,6 +606,7 @@ h1 {
 }
 
 .dark-section,
+.expert-section,
 .dashboard-section,
 .report-section {
   background:
@@ -616,6 +617,7 @@ h1 {
 .section-copy,
 .workflow-grid,
 .feature-grid,
+.expert-layout,
 .dashboard-layout,
 .sample-layout,
 .pricing-grid,
@@ -648,6 +650,7 @@ h1 {
 }
 
 .dark-section .section-copy p,
+.expert-section .section-copy p,
 .dashboard-section .section-copy p,
 .report-section .section-copy p {
   color: var(--muted);
@@ -655,6 +658,7 @@ h1 {
 
 .workflow-grid,
 .feature-grid,
+.expert-grid,
 .pricing-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -663,6 +667,7 @@ h1 {
 
 .workflow-grid article,
 .bevel-card,
+.expert-card,
 .price-card {
   padding: 24px;
 }
@@ -786,6 +791,97 @@ h1 {
 
 .bevel-card p {
   color: var(--muted);
+}
+
+.expert-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(var(--tile-copper-rgb), 0.14), transparent 26rem),
+    radial-gradient(circle at 82% 76%, rgba(56, 208, 131, 0.07), transparent 28rem),
+    linear-gradient(180deg, #070808 0%, #111211 100%);
+}
+
+.expert-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 88px 88px, 44px 44px;
+  mask-image: radial-gradient(circle at 50% 46%, black, transparent 76%);
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.expert-layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.28fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.expert-layout .section-copy {
+  margin-bottom: 0;
+}
+
+.expert-grid {
+  align-items: stretch;
+}
+
+.expert-card {
+  position: relative;
+  min-height: 260px;
+  overflow: hidden;
+  font-family: var(--font-card);
+  border: 1px solid rgba(var(--tile-copper-rgb), 0.34);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 20% 18%, rgba(244, 199, 111, 0.13), transparent 13rem),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.092), rgba(var(--tile-copper-rgb), 0.055)),
+    rgba(8, 9, 9, 0.9);
+  box-shadow: var(--bevel-shadow);
+}
+
+.expert-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(120deg, transparent 0 28%, rgba(255, 221, 176, 0.08) 29%, transparent 46%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 42%);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.expert-card span,
+.expert-card h3,
+.expert-card p {
+  position: relative;
+  z-index: 1;
+}
+
+.expert-card span {
+  display: inline-flex;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.expert-card h3 {
+  margin: 52px 0 12px;
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+.expert-card p {
+  margin: 0;
+  color: rgba(246, 241, 232, 0.72);
+  line-height: 1.58;
 }
 
 .dashboard-layout {
@@ -1457,8 +1553,13 @@ h1 {
 
   .workflow-grid,
   .feature-grid,
+  .expert-grid,
   .dashboard-grid,
   .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .expert-layout {
     grid-template-columns: 1fr;
   }
 }
@@ -1469,6 +1570,7 @@ h1 {
   .section-copy,
   .workflow-grid,
   .feature-grid,
+  .expert-layout,
   .dashboard-layout,
   .sample-layout,
   .pricing-grid,
