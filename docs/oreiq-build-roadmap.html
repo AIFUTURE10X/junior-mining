@@ -448,10 +448,10 @@
             <span class="stage-badge">Critical path</span>
           </div>
           <div class="checklist">
-            <label class="checklist-item"><input type="checkbox" data-task="s1-neon-schema"><span><strong>Create Neon schema</strong><span>Tables: users, companies, report_jobs, reports, sources, evidence_items, scorecard_items, watchlist_items, alerts.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s1-api-submit"><span><strong>Build report-job API</strong><span>Submit company details, source URLs, source text, uploaded-file metadata, and return job status.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s1-ui-job-status"><span><strong>Wire app UI to report jobs</strong><span>Replace the local-only generate action with queued, processing, ready, and failed states.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s1-server-report-save"><span><strong>Persist finished reports</strong><span>Save report sections, scores, evidence, missing information, and final rating back to Neon.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-neon-schema" data-completed="true" checked><span><strong>Create Neon schema</strong><span>Tables: users, companies, report_jobs, reports, sources, evidence_items, scorecard_items, watchlist_items, alerts.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-api-submit" data-completed="true" checked><span><strong>Build report-job API</strong><span>Submit company details, source URLs, source text, uploaded-file metadata, and return job status.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-ui-job-status" data-completed="true" checked><span><strong>Wire app UI to report jobs</strong><span>Replace the local-only generate action with queued, processing, ready, and failed states.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s1-server-report-save" data-completed="true" checked><span><strong>Persist finished reports</strong><span>Save report sections, scores, evidence, missing information, and final rating back to Neon.</span></span></label>
           </div>
         </article>
 
@@ -566,6 +566,7 @@
             <label class="checklist-item"><input type="checkbox" data-task="s7-testing-checklist"><span><strong>Create testing checklist</strong><span>Cover report submission, citation quality, PDF parsing, missing-data behavior, valuation calculations, checklist states, auth access control, billing webhooks, and mobile layout.</span></span></label>
             <label class="checklist-item"><input type="checkbox" data-task="s7-deployment-env"><span><strong>Document deployment and environment variables</strong><span>List every Vercel, Neon, OpenAI, Firecrawl, storage, payment, email, and cron secret needed for preview and production deployments.</span></span></label>
             <label class="checklist-item"><input type="checkbox" data-task="s7-monitoring-backups"><span><strong>Add monitoring, error logging, and backups</strong><span>Track job failures, API errors, slow reports, billing webhook failures, database health, data freshness, and Neon backup/restore expectations.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s7-neon-cost-control" data-completed="true" checked><span><strong>Add Neon cost-control pass</strong><span>Stop automatic Neon reads on page load, return compact job lists, add manual refresh, document cost-control settings, and add quota/diagnostic helper files.</span></span></label>
             <label class="checklist-item"><input type="checkbox" data-task="s7-data-quality-rules"><span><strong>Define data-quality rules</strong><span>Show missing, stale, estimated, conflicting, or unverified valuation numbers clearly instead of hiding uncertainty inside the final rating.</span></span></label>
           </div>
         </article>
@@ -609,7 +610,11 @@
 
       const state = loadState();
       boxes.forEach((box) => {
-        box.checked = Boolean(state[box.dataset.task]);
+        if (box.dataset.completed === "true") {
+          box.checked = true;
+        } else {
+          box.checked = Boolean(state[box.dataset.task]);
+        }
         box.addEventListener("change", () => {
           saveState();
           updateProgress();
@@ -618,7 +623,7 @@
 
       reset.addEventListener("click", () => {
         boxes.forEach((box) => {
-          box.checked = false;
+          box.checked = box.dataset.completed === "true";
         });
         saveState();
         updateProgress();
