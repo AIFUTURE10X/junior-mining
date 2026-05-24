@@ -674,10 +674,63 @@ textarea {
 }
 
 .watchlist,
+.job-list,
 .alert-list {
   display: grid;
   gap: 10px;
   margin-top: 14px;
+}
+
+.job-item {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius);
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  text-align: left;
+}
+
+.job-item span,
+.job-item strong,
+.job-item small {
+  display: block;
+}
+
+.job-item span {
+  width: fit-content;
+  min-height: 24px;
+  margin-bottom: 8px;
+  border: 1px solid rgba(244, 199, 111, 0.24);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.job-item strong {
+  color: var(--text);
+}
+
+.job-item small {
+  margin-top: 5px;
+  color: var(--muted);
+}
+
+.job-item.processing span {
+  border-color: rgba(43, 156, 255, 0.34);
+  color: #a8d9ff;
+}
+
+.job-item.ready span {
+  border-color: rgba(56, 208, 131, 0.34);
+  color: #a5ffd2;
+}
+
+.job-item.failed span {
+  border-color: rgba(255, 106, 85, 0.34);
+  color: #ffbeb6;
 }
 
 .watch-item {

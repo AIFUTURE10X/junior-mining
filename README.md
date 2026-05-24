@@ -31,6 +31,7 @@ Then open the shown local URL and go to `/app/`.
 - Red flags, catalysts, missing-information list, hype/sentiment assessment, and evidence table.
 - Public expert signal capture for sources such as interviews, public articles, or posts.
 - Expert signal report section with non-affiliation and non-advice guardrails.
+- Local report-job queue with queued, processing, ready, and failed states.
 - Local watchlist saved in browser localStorage.
 - Markdown export and print.
 

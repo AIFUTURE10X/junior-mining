@@ -11,6 +11,7 @@
     <link rel="icon" href="../assets/orescan-mark-256.png">
     <link rel="stylesheet" href="./styles.css">
     <script defer src="./reportEngine.js"></script>
+    <script defer src="./jobStore.js"></script>
     <script defer src="./app.js"></script>
   </head>
   <body>
@@ -24,7 +25,7 @@
       </a>
       <div class="header-status" aria-label="App mode">
         <span></span>
-        Local MVP engine
+        Local job engine
       </div>
       <nav class="header-actions" aria-label="App links">
         <a href="../landing-v4/index.html">Landing</a>
@@ -121,7 +122,7 @@ Don Durrett | Public article | https://example.com/don-durrett-nsm | Mentioned N
           <div class="form-actions">
             <button class="primary-action" type="submit">
               <span aria-hidden="true">GO</span>
-              Generate report
+              Queue report
             </button>
             <button class="secondary-action" id="load-sample" type="button">
               <span aria-hidden="true">EX</span>
@@ -162,6 +163,14 @@ Don Durrett | Public article | https://example.com/don-durrett-nsm | Mentioned N
       </section>
 
       <aside class="side-rail" aria-label="Saved reports and alerts">
+        <section class="side-module" aria-labelledby="jobs-title">
+          <div class="side-heading">
+            <span class="kicker">Report jobs</span>
+            <h2 id="jobs-title">Job queue</h2>
+          </div>
+          <div id="job-list" class="job-list" aria-live="polite"></div>
+        </section>
+
         <section class="side-module" aria-labelledby="watchlist-title">
           <div class="side-heading">
             <span class="kicker">Watchlist</span>

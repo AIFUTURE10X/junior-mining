@@ -2,7 +2,9 @@
   "use strict";
 
   const STORAGE_KEY = "oreiq.savedReports.v1";
+  const JOB_STORAGE_KEY = "oreiq.reportJobs.v1";
   const engine = window.OreIQEngine;
+  const jobs = window.OreIQJobs;
 
   const sampleInput = {
     company: "Northern Shield Metals",
@@ -47,6 +49,7 @@
     exportReport: document.getElementById("export-report"),
     printReport: document.getElementById("print-report"),
     loadSample: document.getElementById("load-sample"),
+    jobList: document.getElementById("job-list"),
     watchlist: document.getElementById("watchlist"),
     alertList: document.getElementById("alert-list"),
     status: document.getElementById("status-text")
@@ -91,6 +94,49 @@
     }
   }
 
+  function getReportJobs() {
+    try {
+      return JSON.parse(localStorage.getItem(JOB_STORAGE_KEY) || "[]");
+    } catch (error) {
+      setStatus("Report job storage could not be read.");
+      return [];
+    }
+  }
+
+  function setReportJobs(reportJobs) {
+    try {
+      localStorage.setItem(JOB_STORAGE_KEY, JSON.stringify(reportJobs));
+      return true;
+    } catch (error) {
+      setStatus("Report job storage is unavailable in this browser mode.");
+      return false;
+    }
+  }
+
+  function upsertReportJob(job) {
+    const reportJobs = getReportJobs().filter((item) => item.id !== job.id);
+    reportJobs.unshift(job);
+    const trimmed = reportJobs.slice(0, 10);
+
+    if (setReportJobs(trimmed)) {
+      renderJobQueue();
+      return job;
+    }
+
+    return null;
+  }
+
+  function updateReportJob(id, updater) {
+    const reportJobs = getReportJobs();
+    const existing = reportJobs.find((job) => job.id === id);
+
+    if (!existing) {
+      return null;
+    }
+
+    return upsertReportJob(updater(existing));
+  }
+
   function readForm() {
     return {
       company: els.company.value,
@@ -124,21 +170,66 @@
     renderFileList();
   }
 
-  function generateReport(input) {
+  function validateReportInput(input) {
     const cleanedCompany = String(input.company || "").trim();
     const cleanedTicker = String(input.ticker || "").trim();
 
     if (!cleanedCompany && !cleanedTicker) {
       setError("Enter a company name or ticker.");
-      return;
+      return false;
     }
 
     setError("");
-    currentReport = engine.buildReport(input);
-    renderReport(currentReport);
-    renderAlerts(currentReport);
-    enableReportActions(true);
-    setStatus(`Generated ${currentReport.ticker} report with ${currentReport.confidence}% confidence.`);
+    return true;
+  }
+
+  function submitReportJob(input) {
+    if (!validateReportInput(input)) {
+      return;
+    }
+
+    const job = upsertReportJob(jobs.createReportJob(input));
+
+    if (!job) {
+      return;
+    }
+
+    enableReportActions(false);
+    setStatus(`Queued ${job.ticker} report job.`);
+    scheduleReportJob(job.id);
+  }
+
+  function scheduleReportJob(id) {
+    window.setTimeout(() => {
+      const processingJob = updateReportJob(id, (job) => jobs.markJobProcessing(job));
+
+      if (!processingJob) {
+        return;
+      }
+
+      setStatus(`Processing ${processingJob.ticker} sources.`);
+
+      window.setTimeout(() => {
+        try {
+          const report = engine.buildReport(processingJob.input);
+          report.jobId = processingJob.id;
+          const readyJob = updateReportJob(processingJob.id, (job) => jobs.completeReportJob(job, report));
+
+          if (!readyJob) {
+            return;
+          }
+
+          currentReport = readyJob.report;
+          renderReport(currentReport);
+          renderAlerts(currentReport);
+          enableReportActions(true);
+          setStatus(`Ready: ${currentReport.ticker} report generated with ${currentReport.confidence}% confidence.`);
+        } catch (error) {
+          const failedJob = updateReportJob(processingJob.id, (job) => jobs.failReportJob(job, error));
+          setStatus(failedJob ? `Failed: ${failedJob.error}` : "Report generation failed.");
+        }
+      }, 520);
+    }, 180);
   }
 
   function enableReportActions(enabled) {
@@ -291,6 +382,47 @@
       .join("");
   }
 
+  function renderJobQueue() {
+    const reportJobs = getReportJobs();
+
+    if (!reportJobs.length) {
+      els.jobList.innerHTML = `<div class="alert-item">No report jobs yet.</div>`;
+      return;
+    }
+
+    els.jobList.innerHTML = reportJobs
+      .map((job) => {
+        const summary = jobs.summarizeJob(job);
+        const disabled = summary.status === "ready" ? "" : " disabled";
+        const generated = job.report ? `${job.report.confidence}% confidence` : summary.detail;
+
+        return `
+          <button class="job-item ${escapeHtml(summary.status)}" type="button" data-load-job-id="${escapeHtml(summary.id)}"${disabled}>
+            <span>${escapeHtml(summary.label)}</span>
+            <strong>${escapeHtml(summary.ticker)} - ${escapeHtml(summary.company)}</strong>
+            <small>${escapeHtml(generated)}</small>
+            <small>${escapeHtml(formatDate(job.updatedAt))}</small>
+          </button>
+        `;
+      })
+      .join("");
+  }
+
+  function loadReadyJob(id) {
+    const job = getReportJobs().find((item) => item.id === id);
+
+    if (!job || job.status !== "ready" || !job.report) {
+      setStatus("Report job is not ready yet.");
+      return;
+    }
+
+    currentReport = job.report;
+    renderReport(currentReport);
+    renderAlerts(currentReport);
+    enableReportActions(true);
+    setStatus(`Opened ready ${currentReport.ticker} report job.`);
+  }
+
   function saveCurrentReport() {
     if (!currentReport) {
       return;
@@ -433,9 +565,17 @@
     }
   }
 
+  function handleJobClick(event) {
+    const loadButton = event.target.closest("[data-load-job-id]");
+
+    if (loadButton) {
+      loadReadyJob(loadButton.dataset.loadJobId);
+    }
+  }
+
   els.form.addEventListener("submit", (event) => {
     event.preventDefault();
-    generateReport(readForm());
+    submitReportJob(readForm());
   });
 
   els.sourceFiles.addEventListener("change", handleFileSelection);
@@ -444,12 +584,21 @@
   els.printReport.addEventListener("click", () => window.print());
   els.loadSample.addEventListener("click", () => {
     fillForm(sampleInput);
-    generateReport(readForm());
+    submitReportJob(readForm());
   });
+  els.jobList.addEventListener("click", handleJobClick);
   els.watchlist.addEventListener("click", handleWatchlistClick);
 
   fillForm(sampleInput);
+  renderJobQueue();
   renderWatchlist();
   renderAlerts(null);
-  generateReport(readForm());
+  const existingJobs = getReportJobs();
+  const latestReadyJob = existingJobs.find((job) => job.status === "ready" && job.report);
+
+  if (latestReadyJob) {
+    loadReadyJob(latestReadyJob.id);
+  } else if (!existingJobs.length) {
+    submitReportJob(readForm());
+  }
 })();
