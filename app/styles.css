@@ -408,9 +408,16 @@ textarea {
 
 .primary-action,
 .secondary-action,
-.icon-action {
+.icon-action,
+.mini-action {
   min-height: 46px;
   padding: 0 14px;
+}
+
+.mini-action {
+  min-height: 38px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 .primary-action {
@@ -426,7 +433,8 @@ textarea {
 
 .primary-action span,
 .secondary-action span,
-.icon-action span {
+.icon-action span,
+.mini-action span {
   display: inline-flex;
   align-items: center;
   justify-content: center;

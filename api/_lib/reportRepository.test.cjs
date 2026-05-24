@@ -27,6 +27,26 @@ test("rowToJob maps Neon row fields into browser job shape", () => {
   assert.equal(job.companyId, "company-1");
 });
 
+test("rowToJob accepts compact list rows without full input or report JSON", () => {
+  const job = rowToJob({
+    id: "job-auc-fixed",
+    status: "ready",
+    company: "Aurora Copper",
+    ticker: "AUC",
+    requested_at: "2026-05-24T09:00:00.000Z",
+    updated_at: "2026-05-24T09:02:00.000Z",
+    input: null,
+    report: { id: "AUC-1", confidence: "82", rating: "Watchlist candidate" },
+    error: null,
+    status_log: [],
+    user_id: null,
+    company_id: null
+  });
+
+  assert.deepEqual(job.input, {});
+  assert.deepEqual(job.report, { id: "AUC-1", confidence: "82", rating: "Watchlist candidate" });
+});
+
 test("sourceRowsFromInput normalizes URLs, uploaded files, and pasted text", () => {
   const rows = sourceRowsFromInput({
     sourceUrls: "https://example.com/report\nhttps://example.com/news",

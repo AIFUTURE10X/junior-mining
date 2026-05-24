@@ -30,6 +30,7 @@ Stage 1 adds the first backend slice without replacing the static app:
 - API helper modules and tests under `api/_lib/`.
 - Browser API client: `app/jobApi.js`.
 - Hosted mode persists queued, processing, ready, and failed report jobs, plus finished reports, evidence items, and scorecard items.
+- Hosted mode uses on-demand Neon sync to avoid waking the database on every page load.
 - Direct `file:///` mode keeps using localStorage so the app remains easy to open locally.
 
 Required hosted environment variable:
@@ -39,6 +40,8 @@ DATABASE_URL=postgresql://[user]:[password]@[neon_hostname]/[dbname]
 ```
 
 `NEON_DATABASE_URL` is also accepted as a fallback name.
+
+Cost-control notes and helper scripts are documented in `docs/neon-cost-control.md`.
 
 ## What Works Now
 

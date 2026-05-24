@@ -39,6 +39,11 @@
     return payload.jobs || [];
   }
 
+  async function getReportJob(id) {
+    const payload = await request("GET", null, { id });
+    return payload.job;
+  }
+
   async function createReportJob(input) {
     const payload = await request("POST", { input });
     return payload.job;
@@ -58,6 +63,7 @@
   root.OreIQJobApi = {
     canUseApi,
     createReportJob,
+    getReportJob,
     listReportJobs,
     updateReportJob
   };

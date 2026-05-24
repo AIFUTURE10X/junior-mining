@@ -62,6 +62,7 @@
     exportReport: document.getElementById("export-report"),
     printReport: document.getElementById("print-report"),
     loadSample: document.getElementById("load-sample"),
+    refreshJobs: document.getElementById("refresh-jobs"),
     jobList: document.getElementById("job-list"),
     watchlist: document.getElementById("watchlist"),
     alertList: document.getElementById("alert-list"),
@@ -156,8 +157,12 @@
     return upsertReportJob(updater(existing));
   }
 
+  function canUseHostedJobs() {
+    return Boolean(jobApi && jobApi.canUseApi());
+  }
+
   async function connectHostedJobs() {
-    if (!jobApi || !jobApi.canUseApi()) {
+    if (!canUseHostedJobs()) {
       setAppMode("Local job engine");
       return false;
     }
@@ -167,7 +172,7 @@
       setReportJobs(reportJobs);
       useHostedJobs = true;
       setAppMode("Neon job API");
-      setStatus("Connected to Neon report-job API.");
+      setStatus("Refreshed hosted report jobs from Neon.");
       return true;
     } catch (error) {
       useHostedJobs = false;
@@ -243,9 +248,11 @@
 
     let job = null;
 
-    if (useHostedJobs) {
+    if (useHostedJobs || canUseHostedJobs()) {
       try {
         job = upsertReportJob(await jobApi.createReportJob(input));
+        useHostedJobs = true;
+        setAppMode("Neon job API");
       } catch (error) {
         fallBackToLocalJobs("Neon job API unavailable; queued the report locally.");
       }
@@ -577,10 +584,18 @@
       .join("");
   }
 
-  function loadReadyJob(id) {
-    const job = getReportJobs().find((item) => item.id === id);
+  async function loadReadyJob(id) {
+    let job = getReportJobs().find((item) => item.id === id);
 
-    if (!job || job.status !== "ready" || !job.report) {
+    if (useHostedJobs && jobApi && (!job || !job.report || !job.report.scorecard)) {
+      try {
+        job = upsertReportJob(await jobApi.getReportJob(id));
+      } catch (error) {
+        setStatus("Could not load the full hosted report. Try refresh again.");
+      }
+    }
+
+    if (!job || job.status !== "ready" || !job.report || !job.report.scorecard) {
       setStatus("Report job is not ready yet.");
       return;
     }
@@ -742,6 +757,16 @@
     }
   }
 
+  async function refreshHostedJobs() {
+    if (!canUseHostedJobs()) {
+      setStatus("Hosted Neon refresh needs the app to run from an http deployment.");
+      return;
+    }
+
+    await connectHostedJobs();
+    renderJobQueue();
+  }
+
   els.form.addEventListener("submit", (event) => {
     event.preventDefault();
     submitReportJob(readForm());
@@ -751,6 +776,7 @@
   els.saveReport.addEventListener("click", saveCurrentReport);
   els.exportReport.addEventListener("click", exportMarkdown);
   els.printReport.addEventListener("click", () => window.print());
+  els.refreshJobs.addEventListener("click", refreshHostedJobs);
   els.loadSample.addEventListener("click", () => {
     fillForm(sampleInput);
     submitReportJob(readForm());
@@ -760,10 +786,9 @@
 
   async function init() {
     fillForm(sampleInput);
-    setAppMode("Local job engine");
+    setAppMode(canUseHostedJobs() ? "On-demand Neon sync" : "Local job engine");
     renderWatchlist();
     renderAlerts(null);
-    await connectHostedJobs();
     renderJobQueue();
 
     const existingJobs = getReportJobs();
@@ -771,7 +796,7 @@
 
     if (latestReadyJob) {
       loadReadyJob(latestReadyJob.id);
-    } else if (!existingJobs.length) {
+    } else if (!existingJobs.length && !canUseHostedJobs()) {
       submitReportJob(readForm());
     }
   }

@@ -199,7 +199,33 @@ async function insertReportJob(sql, job) {
 async function listReportJobs(sql, limit) {
   const rows = await query(
     sql,
-    "select * from report_jobs order by updated_at desc limit $1",
+    `
+      select
+        id,
+        status,
+        company,
+        ticker,
+        requested_at,
+        updated_at,
+        null::jsonb as input,
+        case
+          when report is null then null
+          else jsonb_build_object(
+            'id', report->>'id',
+            'rating', report->>'rating',
+            'confidence', report->>'confidence',
+            'company', report->>'company',
+            'ticker', report->>'ticker'
+          )
+        end as report,
+        error,
+        status_log,
+        user_id,
+        company_id
+      from report_jobs
+      order by updated_at desc
+      limit $1
+    `,
     [limit]
   );
 
