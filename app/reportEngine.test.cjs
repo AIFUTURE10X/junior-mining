@@ -96,3 +96,43 @@ test("public expert commentary creates cited expert signals without advice langu
   assert.ok(report.expertSignals.items.every((item) => item.sourceUrl.startsWith("https://")));
   assert.doesNotMatch(serialized, /\bstrong buy\b|\bbuy now\b|\bsell now\b|\bcopy trades\b/);
 });
+
+test("valuation metrics create peer comparison medians and stage-aware guidance", () => {
+  const report = buildReport({
+    ...baseInput,
+    stage: "Development",
+    valuationMetrics: {
+      pNav: "0.42x",
+      evPerOz: "$38/oz",
+      aisc: "$17/oz AgEq",
+      evEbitda: "",
+      pCashFlow: "",
+      reserveLife: "8 years"
+    },
+    peerMetrics: [
+      {
+        company: "Boreal Copper",
+        stage: "Developer",
+        pNav: "0.60x",
+        evPerOz: "$52/oz",
+        aisc: "$19/oz AgEq",
+        reserveLife: "10 years"
+      },
+      {
+        company: "Canyon Metals",
+        stage: "Explorer",
+        pNav: "0.30x",
+        evPerOz: "$24/oz",
+        aisc: "",
+        reserveLife: ""
+      }
+    ]
+  });
+
+  assert.equal(report.valuation.status, "Peer comparison available");
+  assert.equal(report.valuation.peerRows.length, 3);
+  assert.equal(report.valuation.metricCards.find((item) => item.key === "pNav").peerMedian, "0.45x");
+  assert.match(report.valuation.metricCards.find((item) => item.key === "pNav").stageContext, /Developers/i);
+  assert.match(report.valuation.metricCards.find((item) => item.key === "aisc").stageContext, /profitability/i);
+  assert.ok(report.evidence.some((item) => item.type === "valuation" && /peer median/i.test(item.finding)));
+});

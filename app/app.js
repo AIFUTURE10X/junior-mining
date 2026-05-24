@@ -14,6 +14,15 @@
     stage: "Resource definition",
     jurisdiction: "British Columbia",
     marketCap: "85",
+    valuationMetrics:
+      "P/NAV | 0.42x\n" +
+      "EV/oz | $38/oz\n" +
+      "AISC | $17/oz AgEq\n" +
+      "Reserve life | 8 years",
+    peerMetrics:
+      "Company | Stage | P/NAV | EV/oz | AISC | EV/EBITDA | P/CF | Reserve life\n" +
+      "Boreal Copper | Developer | 0.60x | $52/oz | $19/oz AgEq |  |  | 10 years\n" +
+      "Canyon Metals | Explorer | 0.30x | $24/oz |  |  |  | ",
     sourceUrls: [
       "https://example.com/northern-shield-ni-43-101",
       "https://example.com/northern-shield-assay-results"
@@ -37,6 +46,8 @@
     stage: document.getElementById("stage"),
     jurisdiction: document.getElementById("jurisdiction"),
     marketCap: document.getElementById("market-cap"),
+    valuationMetrics: document.getElementById("valuation-metrics"),
+    peerMetrics: document.getElementById("peer-metrics"),
     sourceUrls: document.getElementById("source-urls"),
     sourceText: document.getElementById("source-text"),
     expertSources: document.getElementById("expert-sources"),
@@ -146,6 +157,8 @@
       stage: els.stage.value,
       jurisdiction: els.jurisdiction.value,
       marketCap: els.marketCap.value,
+      valuationMetrics: els.valuationMetrics.value,
+      peerMetrics: els.peerMetrics.value,
       sourceUrls: els.sourceUrls.value,
       sourceText: els.sourceText.value,
       expertSources: els.expertSources.value,
@@ -161,6 +174,8 @@
     els.stage.value = input.stage || "Resource definition";
     els.jurisdiction.value = input.jurisdiction || "";
     els.marketCap.value = input.marketCap || "";
+    els.valuationMetrics.value = typeof input.valuationMetrics === "string" ? input.valuationMetrics : "";
+    els.peerMetrics.value = typeof input.peerMetrics === "string" ? input.peerMetrics : "";
     els.sourceUrls.value = Array.isArray(input.sourceUrls) ? input.sourceUrls.join("\n") : input.sourceUrls || "";
     els.sourceText.value = input.sourceText || "";
     els.expertSources.value = Array.isArray(input.expertSources)
@@ -240,6 +255,20 @@
 
   function renderReport(report) {
     els.reportTitle.textContent = report.company;
+    const valuation = report.valuation || {
+      status: "No valuation data supplied",
+      summary: "Add target metrics and peer rows to compare valuation context.",
+      metricCards: [],
+      peerRows: [
+        {
+          company: report.company,
+          ticker: report.ticker,
+          stage: report.stage,
+          isTarget: true,
+          metrics: {}
+        }
+      ]
+    };
 
     const scoreTiles = Object.entries(report.scorecard)
       .map(([key, item]) => `
@@ -276,6 +305,38 @@
           `)
           .join("")
       : `<article class="expert-card muted-card"><p>No public expert commentary supplied for this report.</p></article>`;
+    const valuationMetricCards = valuation.metricCards.length
+      ? valuation.metricCards
+          .map((item) => `
+            <article class="valuation-card">
+              <span>${escapeHtml(item.label)}</span>
+              <strong>${escapeHtml(item.value)}</strong>
+              <p>${escapeHtml(item.position)} / peer median ${escapeHtml(item.peerMedian)}.</p>
+              <small>${escapeHtml(item.stageContext)}</small>
+            </article>
+          `)
+          .join("")
+      : `<article class="valuation-card muted-card"><p>No valuation metrics supplied yet.</p></article>`;
+    const valuationColumns = [
+      ["pNav", "P/NAV"],
+      ["evPerOz", "EV/oz"],
+      ["aisc", "AISC"],
+      ["evEbitda", "EV/EBITDA"],
+      ["pCashFlow", "P/CF"],
+      ["reserveLife", "Reserve life"]
+    ];
+    const valuationHeader = valuationColumns.map(([, label]) => `<th>${escapeHtml(label)}</th>`).join("");
+    const valuationRows = valuation.peerRows
+      .map((row) => `
+        <tr class="${row.isTarget ? "target-row" : ""}">
+          <td>
+            <strong>${escapeHtml(row.company)}</strong>
+            <small>${escapeHtml(row.ticker || row.stage || "")}</small>
+          </td>
+          ${valuationColumns.map(([key]) => `<td>${escapeHtml(row.metrics[key] || "-")}</td>`).join("")}
+        </tr>
+      `)
+      .join("");
 
     els.reportContent.innerHTML = `
       <div class="report-hero">
@@ -293,6 +354,27 @@
           <div class="meter" aria-hidden="true"><i style="--meter: ${Math.max(5, report.confidence)}%"></i></div>
         </aside>
       </div>
+
+      <section class="report-section valuation-section">
+        <div class="section-title-row">
+          <div>
+            <h3>Valuation vs peers</h3>
+            <p><strong>${escapeHtml(valuation.status)}:</strong> ${escapeHtml(valuation.summary)}</p>
+          </div>
+        </div>
+        <div class="valuation-grid">${valuationMetricCards}</div>
+        <div class="valuation-table-wrap">
+          <table class="valuation-table">
+            <thead>
+              <tr>
+                <th>Company</th>
+                ${valuationHeader}
+              </tr>
+            </thead>
+            <tbody>${valuationRows}</tbody>
+          </table>
+        </div>
+      </section>
 
       <div class="score-grid">${scoreTiles}</div>
 

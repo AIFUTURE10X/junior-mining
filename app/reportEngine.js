@@ -38,6 +38,57 @@
     }
   ];
 
+  const VALUATION_METRICS = [
+    {
+      key: "pNav",
+      label: "P/NAV",
+      aliases: ["p/nav", "price/nav", "price to nav", "price to net asset value"],
+      stageContext: "P/NAV is the main mining valuation shortcut. Developers often trade around 0.4x to 0.8x NAV, while early explorers can be much lower."
+    },
+    {
+      key: "evPerOz",
+      label: "EV/oz",
+      aliases: ["ev/oz", "ev per oz", "enterprise value per ounce", "ev per ounce"],
+      stageContext: "EV/oz helps compare what the market is assigning to each resource ounce across explorers, developers, and producers."
+    },
+    {
+      key: "aisc",
+      label: "AISC",
+      aliases: ["aisc", "all-in sustaining cost", "all in sustaining cost"],
+      stageContext: "AISC is most useful for producers because it compares operating cost and profitability rather than project value alone."
+    },
+    {
+      key: "evEbitda",
+      label: "EV/EBITDA",
+      aliases: ["ev/ebitda", "enterprise value to ebitda"],
+      stageContext: "EV/EBITDA is mainly useful for producing companies with operating earnings."
+    },
+    {
+      key: "pCashFlow",
+      label: "P/CF",
+      aliases: ["p/cf", "price to cash flow", "price/cash flow"],
+      stageContext: "P/CF is mainly useful for producers because it compares market price with operating cash generation."
+    },
+    {
+      key: "tac",
+      label: "TAC",
+      aliases: ["tac", "total acquisition cost"],
+      stageContext: "TAC is useful in M&A and project screening because it combines acquisition cost, build cost, and operating cost assumptions."
+    },
+    {
+      key: "npvIrr",
+      label: "NPV / IRR",
+      aliases: ["npv", "irr", "npv/irr", "npv / irr"],
+      stageContext: "NPV and IRR describe project-level economics from studies, and depend heavily on commodity-price and capex assumptions."
+    },
+    {
+      key: "reserveLife",
+      label: "Reserve life",
+      aliases: ["reserve life", "mine life", "years of production"],
+      stageContext: "Reserve life shows production longevity at current or planned rates and is most meaningful for producers and advanced developers."
+    }
+  ];
+
   function compact(value) {
     return String(value || "").trim();
   }
@@ -97,10 +148,125 @@
       .filter((source) => source.name || source.commentary || source.sourceUrl);
   }
 
+  function matchValuationMetricKey(label) {
+    const normalized = compact(label).toLowerCase();
+
+    if (!normalized) {
+      return "";
+    }
+
+    const metric = VALUATION_METRICS.find((item) => {
+      return item.key.toLowerCase() === normalized || item.aliases.some((alias) => normalized.includes(alias));
+    });
+
+    return metric ? metric.key : "";
+  }
+
+  function normalizeValuationMetrics(metrics) {
+    const normalized = {};
+
+    if (!metrics) {
+      return normalized;
+    }
+
+    if (typeof metrics === "object" && !Array.isArray(metrics)) {
+      VALUATION_METRICS.forEach((metric) => {
+        const value = compact(metrics[metric.key]);
+
+        if (value) {
+          normalized[metric.key] = value;
+        }
+      });
+      return normalized;
+    }
+
+    compact(metrics)
+      .split(/\r?\n/)
+      .forEach((line) => {
+        const parts = line.split(/\||:|=/).map(compact);
+        const key = matchValuationMetricKey(parts[0]);
+        const value = parts.slice(1).join(" ").trim();
+
+        if (key && value) {
+          normalized[key] = value;
+        }
+      });
+
+    return normalized;
+  }
+
+  function parseDelimitedLine(line) {
+    if (line.includes("|")) {
+      return line.split("|").map(compact);
+    }
+
+    return line.split(",").map(compact);
+  }
+
+  function normalizePeerMetrics(peerMetrics) {
+    if (!peerMetrics) {
+      return [];
+    }
+
+    if (Array.isArray(peerMetrics)) {
+      return peerMetrics
+        .map((peer) => ({
+          company: compact(peer.company || peer.name),
+          ticker: compact(peer.ticker).toUpperCase(),
+          stage: compact(peer.stage),
+          metrics: normalizeValuationMetrics(peer)
+        }))
+        .filter((peer) => peer.company || Object.keys(peer.metrics).length);
+    }
+
+    const lines = compact(peerMetrics).split(/\r?\n/).map(compact).filter(Boolean);
+
+    if (!lines.length) {
+      return [];
+    }
+
+    const header = parseDelimitedLine(lines[0]);
+    const dataLines = /company|ticker|p\/nav|ev\/oz|aisc|reserve/i.test(lines[0]) ? lines.slice(1) : lines;
+
+    return dataLines
+      .map((line) => {
+        const values = parseDelimitedLine(line);
+        const peer = {
+          company: "",
+          ticker: "",
+          stage: "",
+          metrics: {}
+        };
+
+        values.forEach((value, index) => {
+          const headerLabel = header[index] || "";
+          const lowerHeader = headerLabel.toLowerCase();
+          const key = matchValuationMetricKey(headerLabel);
+
+          if (/company|peer|name/.test(lowerHeader)) {
+            peer.company = value;
+          } else if (/ticker/.test(lowerHeader)) {
+            peer.ticker = value.toUpperCase();
+          } else if (/stage/.test(lowerHeader)) {
+            peer.stage = value;
+          } else if (key && value) {
+            peer.metrics[key] = value;
+          } else if (index === 0 && !peer.company) {
+            peer.company = value;
+          }
+        });
+
+        return peer;
+      })
+      .filter((peer) => peer.company || Object.keys(peer.metrics).length);
+  }
+
   function normalizeInput(input) {
     const sourceUrls = splitLines(input.sourceUrls);
     const files = normalizeFiles(input.files);
     const expertSources = normalizeExpertSources(input.expertSources);
+    const valuationMetrics = normalizeValuationMetrics(input.valuationMetrics);
+    const peerMetrics = normalizePeerMetrics(input.peerMetrics);
 
     return {
       company: compact(input.company) || "Selected Mining Company",
@@ -113,7 +279,9 @@
       sourceUrls,
       sourceText: compact(input.sourceText),
       files,
-      expertSources
+      expertSources,
+      valuationMetrics,
+      peerMetrics
     };
   }
 
@@ -129,7 +297,9 @@
       input.sourceUrls.join(" "),
       input.sourceText,
       input.files.map((file) => `${file.name} ${file.text}`).join(" "),
-      input.expertSources.map((source) => `${source.name} ${source.sourceType} ${source.sourceUrl} ${source.commentary}`).join(" ")
+      input.expertSources.map((source) => `${source.name} ${source.sourceType} ${source.sourceUrl} ${source.commentary}`).join(" "),
+      Object.values(input.valuationMetrics).join(" "),
+      input.peerMetrics.map((peer) => `${peer.company} ${peer.ticker} ${peer.stage} ${Object.values(peer.metrics).join(" ")}`).join(" ")
     ].join(" ").toLowerCase();
   }
 
@@ -316,7 +486,110 @@
     });
   }
 
-  function buildEvidence(input, text, confidence, hypeStatus, missingInformation, expertSignals) {
+  function parseMetricNumber(value) {
+    const match = compact(value).replace(/,/g, "").match(/-?\d+(?:\.\d+)?/);
+    return match ? Number(match[0]) : null;
+  }
+
+  function median(values) {
+    const numbers = values.filter((value) => Number.isFinite(value)).sort((a, b) => a - b);
+
+    if (!numbers.length) {
+      return null;
+    }
+
+    const middle = Math.floor(numbers.length / 2);
+    return numbers.length % 2 ? numbers[middle] : (numbers[middle - 1] + numbers[middle]) / 2;
+  }
+
+  function trimNumber(value, digits) {
+    return Number(value.toFixed(digits)).toString();
+  }
+
+  function formatMetricNumber(key, value) {
+    if (!Number.isFinite(value)) {
+      return "";
+    }
+
+    if (key === "pNav" || key === "evEbitda" || key === "pCashFlow") {
+      return `${trimNumber(value, 2)}x`;
+    }
+    if (key === "evPerOz" || key === "aisc") {
+      return `$${trimNumber(value, 0)}/oz`;
+    }
+    if (key === "reserveLife") {
+      return `${trimNumber(value, 1)} years`;
+    }
+
+    return trimNumber(value, 2);
+  }
+
+  function compareToMedian(target, peerMedian) {
+    if (!Number.isFinite(target) || !Number.isFinite(peerMedian)) {
+      return "Needs peer data";
+    }
+
+    const spread = peerMedian === 0 ? 0 : ((target - peerMedian) / peerMedian) * 100;
+
+    if (Math.abs(spread) < 8) {
+      return "Near peer median";
+    }
+
+    return spread > 0 ? "Above peer median" : "Below peer median";
+  }
+
+  function buildValuationComparison(input) {
+    const targetMetrics = input.valuationMetrics;
+    const peerRows = [
+      {
+        company: input.company,
+        ticker: input.ticker,
+        stage: input.stage,
+        isTarget: true,
+        metrics: targetMetrics
+      },
+      ...input.peerMetrics.map((peer) => ({
+        ...peer,
+        isTarget: false
+      }))
+    ];
+
+    const metricCards = VALUATION_METRICS.map((metric) => {
+      const targetValue = targetMetrics[metric.key] || "";
+      const targetNumber = parseMetricNumber(targetValue);
+      const peerNumbers = input.peerMetrics.map((peer) => parseMetricNumber(peer.metrics[metric.key])).filter((value) => value !== null);
+      const peerMedianValue = median(peerNumbers);
+      const hasMetric = targetValue || peerNumbers.length;
+
+      if (!hasMetric) {
+        return null;
+      }
+
+      return {
+        key: metric.key,
+        label: metric.label,
+        value: targetValue || "Not supplied",
+        peerMedian: peerMedianValue === null ? "Not supplied" : formatMetricNumber(metric.key, peerMedianValue),
+        position: compareToMedian(targetNumber, peerMedianValue),
+        stageContext: metric.stageContext
+      };
+    }).filter(Boolean);
+
+    return {
+      status: metricCards.length && input.peerMetrics.length
+        ? "Peer comparison available"
+        : metricCards.length
+          ? "Target valuation metrics available"
+          : "No valuation data supplied",
+      summary: metricCards.length
+        ? "Valuation metrics are shown as peer-comparison context, not as a standalone recommendation."
+        : "Add P/NAV, EV/oz, AISC, EV/EBITDA, P/CF, TAC, NPV/IRR, reserve life, and peer rows to compare valuation context.",
+      metricCards,
+      peerRows
+    };
+  }
+
+  function buildEvidence(input, text, confidence, hypeStatus, missingInformation, expertSignals, valuation) {
     const evidence = [];
 
     input.sourceUrls.forEach((url) => {
@@ -371,6 +644,17 @@
         item.finding,
         "expert",
         confidence - 8
+      );
+    });
+
+    valuation.metricCards.forEach((item) => {
+      addEvidence(
+        evidence,
+        "Valuation input",
+        `${item.label}: ${item.value}; peer median: ${item.peerMedian}`,
+        `${item.label} is ${item.position.toLowerCase()} based on supplied peer median data.`,
+        "valuation",
+        confidence - 6
       );
     });
 
@@ -522,12 +806,13 @@
     const confidence = computeConfidence(input, text);
     const hype = hypeAssessment(text, confidence);
     const expertSignals = buildExpertSignals(input, text, confidence);
+    const valuation = buildValuationComparison(input);
     const missingInformation = findMissingInformation(input, text);
     const scorecard = makeScorecard(input, text, confidence, hype.status);
     const redFlags = findRedFlags(text, hype.status, missingInformation);
     const catalysts = findCatalysts(text);
     const rating = makeRating(scorecard, confidence, redFlags, missingInformation);
-    const evidence = buildEvidence(input, text, confidence, hype.status, missingInformation, expertSignals);
+    const evidence = buildEvidence(input, text, confidence, hype.status, missingInformation, expertSignals, valuation);
     const summary = makeSummary(input, rating, confidence, scorecard, redFlags, missingInformation);
 
     const report = {
@@ -549,6 +834,7 @@
       missingInformation,
       hype,
       expertSignals,
+      valuation,
       evidence,
       disclaimer:
         "OreIQ provides research support and source summaries only. It does not provide personalized investment advice, broker services, or guaranteed return claims."
@@ -563,6 +849,11 @@
   }
 
   function reportToMarkdown(report) {
+    const valuation = report.valuation || {
+      status: "No valuation data supplied",
+      summary: "Add target metrics and peer rows to compare valuation context.",
+      metricCards: []
+    };
     const scoreRows = Object.entries(report.scorecard)
       .map(([key, item]) => `| ${labelFromKey(key)} | ${item.score}/10 | ${item.confidence} | ${item.rationale} |`)
       .join("\n");
@@ -601,6 +892,13 @@
       ...(report.expertSignals.items.length
         ? report.expertSignals.items.map((item) => `- ${item.name} (${item.sourceType}): ${item.commentary} Source: ${item.sourceUrl || "not supplied"}`)
         : ["- No expert signal source supplied."]),
+      "",
+      "## Valuation vs Peers",
+      `Status: ${valuation.status}`,
+      valuation.summary,
+      ...(valuation.metricCards.length
+        ? valuation.metricCards.map((item) => `- ${item.label}: ${item.value}; peer median ${item.peerMedian}; ${item.position}. ${item.stageContext}`)
+        : ["- No valuation metrics supplied."]),
       "",
       "## Evidence",
       "| Type | Source | Cue | Finding | Confidence |",

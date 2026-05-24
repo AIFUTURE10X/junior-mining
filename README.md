@@ -29,6 +29,7 @@ Then open the shown local URL and go to `/app/`.
 - Deterministic local due-diligence report generation.
 - Mining scorecard with confidence and rationales.
 - Red flags, catalysts, missing-information list, hype/sentiment assessment, and evidence table.
+- Valuation metrics and peer comparison table for P/NAV, EV/oz, AISC, EV/EBITDA, P/CF, and reserve life.
 - Public expert signal capture for sources such as interviews, public articles, or posts.
 - Expert signal report section with non-affiliation and non-advice guardrails.
 - Local report-job queue with queued, processing, ready, and failed states.
