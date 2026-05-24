@@ -382,6 +382,8 @@
           <div class="pill-row" aria-label="Roadmap tags">
             <span class="pill">Neon Postgres</span>
             <span class="pill">Source-cited AI</span>
+            <span class="pill">Valuation peers</span>
+            <span class="pill">Stage checklists</span>
             <span class="pill">Expert signals</span>
             <span class="pill">No direct advice</span>
           </div>
@@ -390,7 +392,7 @@
         <span class="kicker">Product direction</span>
         <h1>Build the research engine before the social-follow layer.</h1>
         <p class="lede">
-          The expert-following feature is worth adding, but only if OreIQ treats Rick Rule, Don Durrett, Jacques Bonneau, and future names as public-source signal inputs. The product should summarize what credible people are discussing, cite the original source, compare it against filings and technical evidence, and avoid telling users to copy trades or take personal financial advice.
+          OreIQ should combine source-cited reports, valuation peer comparisons, stage-specific junior mining checklists, and public expert commentary into one research workflow. The expert-following feature is worth adding, but only if OreIQ treats Rick Rule, Don Durrett, Jacques Bonneau, and future names as public-source signal inputs. The product should summarize what credible people are discussing, cite the original source, compare it against filings, technical evidence, valuation data, and stage-specific rules, and avoid telling users to copy trades or take personal financial advice.
         </p>
       </section>
 
@@ -414,7 +416,7 @@
 
         <article class="card">
           <span class="kicker">Why it is useful</span>
-          <h2>Good idea, after core ingestion</h2>
+          <h2>Good idea, after source and valuation logic</h2>
           <ul>
             <li>Resource investors already follow personalities and newsletters.</li>
             <li>It makes OreIQ more mining-specific than generic stock tools.</li>
@@ -429,6 +431,7 @@
             <li>Do not scrape or republish paid newsletter content.</li>
             <li>Do not imply endorsement or affiliation.</li>
             <li>Do not generate buy/sell instructions from one person's comments.</li>
+            <li>Do not treat valuation metrics or checklist passes as automatic investment recommendations.</li>
           </ul>
         </article>
       </section>
@@ -489,18 +492,20 @@
           <div class="stage-header">
             <div>
               <span class="kicker">Stage 4</span>
-              <h2>Expert Signal Tracker</h2>
-              <p>Goal: track public commentary from selected mining investors and analysts without turning OreIQ into a copy-trading tool.</p>
+              <h2>Valuation intelligence and stage-specific checklists</h2>
+              <p>Goal: make every report easier to judge by showing peer valuation context and the right due-diligence rules for producers, developers, and explorers.</p>
             </div>
-            <span class="stage-badge">Add after Stage 2</span>
+            <span class="stage-badge">Data clarity</span>
           </div>
           <div class="checklist">
-            <label class="checklist-item"><input type="checkbox" data-task="s4-expert-profiles"><span><strong>Create expert profile model</strong><span>Fields: name, role, public bio note, source URLs, topics, commodities, credibility notes, active flag.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s4-seed-experts"><span><strong>Seed first tracked names</strong><span>Rick Rule, Don Durrett, Jacques Bonneau. Add an admin flow for more names later.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s4-public-source-ingestion"><span><strong>Ingest public commentary only</strong><span>Use public interviews, podcasts, YouTube descriptions/transcripts where available, public posts, and public articles. Do not ingest paid/private content.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s4-mention-extraction"><span><strong>Extract companies and commodities mentioned</strong><span>Map mentions to companies, tickers, commodity themes, jurisdictions, and catalysts.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s4-signal-panel"><span><strong>Add expert signal panel to reports</strong><span>Show who mentioned the company/theme, when, source citation, quote summary, and whether filings support or contradict the signal.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s4-guardrail-copy"><span><strong>Add explicit non-affiliation copy</strong><span>Make clear these people are public sources being monitored, not partners, endorsers, or personalized advisers.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-valuation-ui"><span><strong>Keep valuation metrics visible in reports</strong><span>Show P/NAV, EV/oz, AISC, EV/EBITDA, P/CF, TAC, NPV/IRR, reserve life, target value, peer median, and above/below-peer context in a compact table.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-peer-grouping"><span><strong>Create automatic peer groups</strong><span>Group comparable companies by commodity, stage, jurisdiction, exchange, market cap, and resource type so peer medians are not manually entered forever.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-live-valuation-data"><span><strong>Pull live and source-backed valuation data</strong><span>Use filings, company decks, market-cap feeds, resource tables, AISC data, capex, NPV, IRR, reserve life, cash, and debt to calculate or verify metrics.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-producer-checklist"><span><strong>Add producer checklist</strong><span>Score property quality, multiple assets, established mining district, tax/royalty burden, permitting, management execution, cash over $100M where relevant, debt, margins, growth pipeline, and acquisition discipline.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-developer-checklist"><span><strong>Add developer checklist</strong><span>Score NPV versus capex, IRR above 25% at spot prices, mine-building management experience, clear path to production, execution consistency, and insider ownership around 20-25% where disclosed.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-explorer-checklist"><span><strong>Add explorer checklist</strong><span>Score optionality value per ounce, land package, drill quality, discovery potential, early-stage rerating setup, gram-meter results around 300+ where relevant, dilution risk, and evidence gaps.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-pass-watch-concern"><span><strong>Use Pass / Watch / Concern / Missing states</strong><span>Every valuation and stage-checklist item should show a clear status with the cited evidence behind it, not just a raw score.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s4-valuation-evidence"><span><strong>Tie valuation claims to evidence</strong><span>Every peer metric, checklist result, and red flag should link back to source chunks from filings, technical reports, investor decks, or market data.</span></span></label>
           </div>
         </article>
 
@@ -508,22 +513,41 @@
           <div class="stage-header">
             <div>
               <span class="kicker">Stage 5</span>
+              <h2>Expert Signal Tracker</h2>
+              <p>Goal: track public commentary from selected mining investors and analysts without turning OreIQ into a copy-trading tool.</p>
+            </div>
+            <span class="stage-badge">Add after Stage 2</span>
+          </div>
+          <div class="checklist">
+            <label class="checklist-item"><input type="checkbox" data-task="s5-expert-profiles"><span><strong>Create expert profile model</strong><span>Fields: name, role, public bio note, source URLs, topics, commodities, credibility notes, active flag.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-seed-experts"><span><strong>Seed first tracked names</strong><span>Rick Rule, Don Durrett, Jacques Bonneau. Add an admin flow for more names later.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-public-source-ingestion"><span><strong>Ingest public commentary only</strong><span>Use public interviews, podcasts, YouTube descriptions/transcripts where available, public posts, and public articles. Do not ingest paid/private content.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-mention-extraction"><span><strong>Extract companies and commodities mentioned</strong><span>Map mentions to companies, tickers, commodity themes, jurisdictions, and catalysts.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-signal-panel"><span><strong>Add expert signal panel to reports</strong><span>Show who mentioned the company/theme, when, source citation, quote summary, and whether filings, valuation metrics, and checklist results support or contradict the signal.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s5-guardrail-copy"><span><strong>Add explicit non-affiliation copy</strong><span>Make clear these people are public sources being monitored, not partners, endorsers, or personalized advisers.</span></span></label>
+          </div>
+        </article>
+
+        <article class="stage">
+          <div class="stage-header">
+            <div>
+              <span class="kicker">Stage 6</span>
               <h2>Watchlists, alerts, and monetization</h2>
               <p>Goal: users return because OreIQ monitors names, sources, and expert/public commentary after the first report.</p>
             </div>
             <span class="stage-badge">Retention</span>
           </div>
           <div class="checklist">
-            <label class="checklist-item"><input type="checkbox" data-task="s5-watchlist"><span><strong>Move watchlist to Neon</strong><span>Save companies, report history, user tags, and latest risk/rating state by account.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s5-alerts"><span><strong>Create alert rules</strong><span>New filing, press release, financing, drill result, expert mention, sentiment spike, and report-rating change.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s5-payment"><span><strong>Add paid report flow</strong><span>Start with one-time paid reports before subscription complexity.</span></span></label>
-            <label class="checklist-item"><input type="checkbox" data-task="s5-admin-review"><span><strong>Add admin review queue</strong><span>Let a human review low-confidence or paid reports before delivery during validation.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s6-watchlist"><span><strong>Move watchlist to Neon</strong><span>Save companies, report history, user tags, latest valuation state, checklist status, and latest risk/rating state by account.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s6-alerts"><span><strong>Create alert rules</strong><span>New filing, press release, financing, drill result, valuation-multiple change, checklist deterioration, expert mention, sentiment spike, and report-rating change.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s6-payment"><span><strong>Add paid report flow</strong><span>Start with one-time paid reports before subscription complexity.</span></span></label>
+            <label class="checklist-item"><input type="checkbox" data-task="s6-admin-review"><span><strong>Add admin review queue</strong><span>Let a human review low-confidence, conflicting, missing-data-heavy, or paid reports before delivery during validation.</span></span></label>
           </div>
         </article>
       </section>
 
       <p class="footer-note">
-        Recommended build order: Neon report jobs, source ingestion, OpenAI cited report generation, then expert signals. The expert feature is useful, but it should support due diligence instead of replacing it.
+        Recommended build order: Neon report jobs, source ingestion, OpenAI cited report generation, valuation plus stage-specific checklists, then expert signals. The expert feature is useful, but it should support due diligence instead of replacing it.
       </p>
     </main>
 
