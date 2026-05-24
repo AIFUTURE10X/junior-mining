@@ -5,6 +5,7 @@
   const JOB_STORAGE_KEY = "oreiq.reportJobs.v1";
   const engine = window.OreIQEngine;
   const jobs = window.OreIQJobs;
+  const jobApi = window.OreIQJobApi;
 
   const sampleInput = {
     company: "Northern Shield Metals",
@@ -38,6 +39,7 @@
   };
 
   const els = {
+    appMode: document.getElementById("app-mode"),
     form: document.getElementById("analysis-form"),
     company: document.getElementById("company"),
     ticker: document.getElementById("ticker"),
@@ -68,6 +70,7 @@
 
   let selectedFiles = [];
   let currentReport = null;
+  let useHostedJobs = false;
 
   function escapeHtml(value) {
     return String(value || "")
@@ -80,6 +83,11 @@
 
   function setStatus(message) {
     els.status.textContent = message;
+  }
+
+  function setAppMode(label) {
+    const dot = document.createElement("span");
+    els.appMode.replaceChildren(dot, document.createTextNode(label));
   }
 
   function setError(message) {
@@ -148,6 +156,36 @@
     return upsertReportJob(updater(existing));
   }
 
+  async function connectHostedJobs() {
+    if (!jobApi || !jobApi.canUseApi()) {
+      setAppMode("Local job engine");
+      return false;
+    }
+
+    try {
+      const reportJobs = await jobApi.listReportJobs(10);
+      setReportJobs(reportJobs);
+      useHostedJobs = true;
+      setAppMode("Neon job API");
+      setStatus("Connected to Neon report-job API.");
+      return true;
+    } catch (error) {
+      useHostedJobs = false;
+      setAppMode("Local job engine");
+      setStatus("Using local job engine until the Neon API is configured.");
+      return false;
+    }
+  }
+
+  function fallBackToLocalJobs(message) {
+    useHostedJobs = false;
+    setAppMode("Local job engine");
+
+    if (message) {
+      setStatus(message);
+    }
+  }
+
   function readForm() {
     return {
       company: els.company.value,
@@ -198,25 +236,49 @@
     return true;
   }
 
-  function submitReportJob(input) {
+  async function submitReportJob(input) {
     if (!validateReportInput(input)) {
       return;
     }
 
-    const job = upsertReportJob(jobs.createReportJob(input));
+    let job = null;
+
+    if (useHostedJobs) {
+      try {
+        job = upsertReportJob(await jobApi.createReportJob(input));
+      } catch (error) {
+        fallBackToLocalJobs("Neon job API unavailable; queued the report locally.");
+      }
+    }
+
+    if (!job) {
+      job = upsertReportJob(jobs.createReportJob(input));
+    }
 
     if (!job) {
       return;
     }
 
     enableReportActions(false);
-    setStatus(`Queued ${job.ticker} report job.`);
+    setStatus(`Queued ${job.ticker} report job${useHostedJobs ? " in Neon" : ""}.`);
     scheduleReportJob(job.id);
   }
 
   function scheduleReportJob(id) {
-    window.setTimeout(() => {
-      const processingJob = updateReportJob(id, (job) => jobs.markJobProcessing(job));
+    window.setTimeout(async () => {
+      let processingJob = null;
+
+      if (useHostedJobs) {
+        try {
+          processingJob = upsertReportJob(await jobApi.updateReportJob(id, "processing"));
+        } catch (error) {
+          fallBackToLocalJobs("Neon processing update failed; continuing locally.");
+        }
+      }
+
+      if (!processingJob) {
+        processingJob = updateReportJob(id, (job) => jobs.markJobProcessing(job));
+      }
 
       if (!processingJob) {
         return;
@@ -224,11 +286,23 @@
 
       setStatus(`Processing ${processingJob.ticker} sources.`);
 
-      window.setTimeout(() => {
+      window.setTimeout(async () => {
         try {
           const report = engine.buildReport(processingJob.input);
           report.jobId = processingJob.id;
-          const readyJob = updateReportJob(processingJob.id, (job) => jobs.completeReportJob(job, report));
+          let readyJob = null;
+
+          if (useHostedJobs) {
+            try {
+              readyJob = upsertReportJob(await jobApi.updateReportJob(processingJob.id, "complete", { report }));
+            } catch (error) {
+              fallBackToLocalJobs("Report is ready locally; Neon report persistence failed.");
+            }
+          }
+
+          if (!readyJob) {
+            readyJob = updateReportJob(processingJob.id, (job) => jobs.completeReportJob(job, report));
+          }
 
           if (!readyJob) {
             return;
@@ -238,9 +312,22 @@
           renderReport(currentReport);
           renderAlerts(currentReport);
           enableReportActions(true);
-          setStatus(`Ready: ${currentReport.ticker} report generated with ${currentReport.confidence}% confidence.`);
+          setStatus(`Ready: ${currentReport.ticker} report generated with ${currentReport.confidence}% confidence${useHostedJobs ? " and saved to Neon" : ""}.`);
         } catch (error) {
-          const failedJob = updateReportJob(processingJob.id, (job) => jobs.failReportJob(job, error));
+          let failedJob = null;
+
+          if (useHostedJobs) {
+            try {
+              failedJob = upsertReportJob(await jobApi.updateReportJob(processingJob.id, "fail", { error: error.message }));
+            } catch (apiError) {
+              fallBackToLocalJobs("Report generation failed; Neon failure update also failed.");
+            }
+          }
+
+          if (!failedJob) {
+            failedJob = updateReportJob(processingJob.id, (job) => jobs.failReportJob(job, error));
+          }
+
           setStatus(failedJob ? `Failed: ${failedJob.error}` : "Report generation failed.");
         }
       }, 520);
@@ -671,16 +758,23 @@
   els.jobList.addEventListener("click", handleJobClick);
   els.watchlist.addEventListener("click", handleWatchlistClick);
 
-  fillForm(sampleInput);
-  renderJobQueue();
-  renderWatchlist();
-  renderAlerts(null);
-  const existingJobs = getReportJobs();
-  const latestReadyJob = existingJobs.find((job) => job.status === "ready" && job.report);
+  async function init() {
+    fillForm(sampleInput);
+    setAppMode("Local job engine");
+    renderWatchlist();
+    renderAlerts(null);
+    await connectHostedJobs();
+    renderJobQueue();
 
-  if (latestReadyJob) {
-    loadReadyJob(latestReadyJob.id);
-  } else if (!existingJobs.length) {
-    submitReportJob(readForm());
+    const existingJobs = getReportJobs();
+    const latestReadyJob = existingJobs.find((job) => job.status === "ready" && job.report);
+
+    if (latestReadyJob) {
+      loadReadyJob(latestReadyJob.id);
+    } else if (!existingJobs.length) {
+      submitReportJob(readForm());
+    }
   }
+
+  init();
 })();

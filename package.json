@@ -1,0 +1,15 @@
+{
+  "name": "oreiq",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OreIQ junior mining due-diligence assistant.",
+  "scripts": {
+    "test": "node --test app/reportEngine.test.cjs app/jobStore.test.cjs api/_lib/*.test.cjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
