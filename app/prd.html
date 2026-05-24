@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OreIQ PRD - Junior Mining Due Diligence</title>
+    <meta
+      name="description"
+      content="OreIQ product requirements for the junior mining due-diligence MVP."
+    >
+    <link rel="icon" href="../assets/orescan-mark-256.png">
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <header class="app-header">
+      <a class="brand" href="./index.html" aria-label="OreIQ app home">
+        <img src="../assets/orescan-mark-256.png" alt="">
+        <span>
+          <strong>OreIQ</strong>
+          <small>Product requirements</small>
+        </span>
+      </a>
+      <div class="header-status" aria-label="PRD status">
+        <span></span>
+        MVP PRD
+      </div>
+      <nav class="header-actions" aria-label="PRD links">
+        <a href="../index.html">Landing</a>
+        <a href="./index.html">App</a>
+      </nav>
+    </header>
+
+    <main class="prd-shell">
+      <section class="prd-hero">
+        <span class="kicker">OreIQ PRD</span>
+        <h1>Source-cited AI due diligence for junior mining stocks.</h1>
+        <p>
+          OreIQ helps retail and specialist resource investors turn technical reports, filings, drill results, and market context into clear mining risk reports with evidence, red flags, confidence levels, and next-step catalysts.
+        </p>
+      </section>
+
+      <section class="prd-grid" aria-label="Product requirements summary">
+        <article>
+          <span>01</span>
+          <h2>Objective</h2>
+          <p>Validate whether investors will pay for mining-specific, source-cited due-diligence reports before building the full SaaS backend.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <h2>Primary user</h2>
+          <p>Retail and semi-professional resource investors who need a disciplined first pass before spending hours reading filings, PDFs, forums, and presentations.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <h2>MVP scope</h2>
+          <p>Company intake, source collection, deterministic report generation, mining scorecard, hype-risk snapshot, watchlist storage, Markdown export, and print output.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <h2>Report output</h2>
+          <p>Each report separates facts, inference, missing information, red flags, catalysts, and confidence so the user can see what is proven and what still needs work.</p>
+        </article>
+        <article>
+          <span>05</span>
+          <h2>Product guardrail</h2>
+          <p>OreIQ should not present direct buy or sell calls. It should help users decide whether a company deserves deeper research.</p>
+        </article>
+        <article>
+          <span>06</span>
+          <h2>Next backend phase</h2>
+          <p>Add auth, saved reports, server-side PDF extraction, OpenAI-backed report generation, Firecrawl or Apify source collection, Stripe checkout, and alert jobs.</p>
+        </article>
+      </section>
+
+      <section class="prd-panel">
+        <span class="kicker">Core requirements</span>
+        <ul>
+          <li>Company intake for ticker, exchange, commodity, project stage, jurisdiction, and market cap.</li>
+          <li>Source queue for URLs, pasted source text, and uploaded text or PDF references.</li>
+          <li>Mining-specific scorecard for project quality, dilution risk, management risk, jurisdiction risk, catalyst strength, hype risk, and confidence.</li>
+          <li>Watchlist and saved reports stored locally for the static MVP.</li>
+          <li>Exportable Markdown and printable report output.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
